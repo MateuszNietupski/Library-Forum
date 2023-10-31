@@ -59,6 +59,8 @@ builder.Services.AddAuthentication(options =>
     jwt.TokenValidationParameters = tokenValidationParameter;
 });
 
+builder.Services.AddSingleton(tokenValidationParameter);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

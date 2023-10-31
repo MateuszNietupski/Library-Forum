@@ -6,6 +6,8 @@ using Projekt.Models.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Projekt.Data;
 
 namespace Projekt.Controllers
 {
@@ -16,11 +18,19 @@ namespace Projekt.Controllers
             private readonly UserManager<IdentityUser> _userManager;
             private readonly IConfiguration _configuration;
             private readonly RoleManager<IdentityRole> _roleManager;
-            public AuthenticationController(UserManager<IdentityUser> userManager, IConfiguration configuration, RoleManager<IdentityRole> roleManager)
+            private readonly TokenValidationParameters _tokenValidationParameters;
+            private readonly AppDbContext _context;
+            public AuthenticationController(UserManager<IdentityUser> userManager,
+                IConfiguration configuration,
+                AppDbContext context,
+                RoleManager<IdentityRole> roleManager,
+                TokenValidationParameters tokenValidationParameters)
             {
                 _userManager = userManager;
                 _configuration = configuration;
                 _roleManager = roleManager;
+                _context = context;
+                _tokenValidationParameters = tokenValidationParameters;
             }
             [Route("Register")]
             [HttpPost]
@@ -40,25 +50,24 @@ namespace Projekt.Controllers
                         }
                         });
                     }
-                    var new_user = new AppUser()
+                    var newUser = new IdentityUser()
                     {
                         Email = registerDto.Email,
                         UserName = registerDto.Name
                     };
-                    var is_created = await _userManager.CreateAsync(new_user, registerDto.Password);
+                    var is_created = await _userManager.CreateAsync(newUser, registerDto.Password);
 
 
                     if (is_created.Succeeded)
                     {
-                        await _roleManager.CreateAsync(new IdentityRole("User"));
-                        var role = new IdentityRole("User");
-                        await _userManager.AddToRoleAsync(new_user, "User");
-                        var token = GenerateJwtToken(new_user, role);
-                        return Ok(new AuthResult()
+                        var userRole = await _roleManager.FindByNameAsync("User");
+                        if (userRole is null)
                         {
-                            Token = token,
-                            Result = true
-                        });
+                            await _roleManager.CreateAsync(new IdentityRole("User"));
+                        }
+                        await _userManager.AddToRoleAsync(newUser, "User");
+                        var token = await GenerateJwtToken(newUser);
+                        return Ok(token); 
                     }
                     return BadRequest(new AuthResult()
                     {
@@ -71,9 +80,162 @@ namespace Projekt.Controllers
                 }
                 return BadRequest();
             }
+
+            [HttpPost]
+            [Route("RefreshToken")]
+            public async Task<IActionResult> RefreshToken([FromBody] TokenRequest tokenRequest)
+            {
+                if (ModelState.IsValid)
+                {
+                    var result = VerifyAndGenerateToken(tokenRequest);
+
+                    if (result == null)
+                        return BadRequest(new AuthResult()
+                        {
+                            Errors = new List<string>()
+                            {
+                                "Invalid token"
+                            },
+                            Result = false
+                        });
+                    return Ok(result);
+
+                }
+
+                return BadRequest(new AuthResult()
+                {
+                    Errors = new List<string>()
+                    {
+                        "Invalid refresh token"
+                    },
+                    Result = false
+                });
+            }
+
+            private async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest)
+            {
+                var jwtTokenHandler = new JwtSecurityTokenHandler();
+
+                try
+                {
+                    _tokenValidationParameters.ValidateLifetime = false;
+
+                    var tokenInVerification = jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParameters, out var validatedToken);
+
+                    if (validatedToken is JwtSecurityToken jwtSecurityToken)
+                    {
+                        var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
+
+                        if (result == false)
+                            return null;
+                    }
+
+                    var utcExpiryDate = long.Parse(tokenInVerification.Claims
+                        .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+
+                    var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
+                    if (expiryDate > DateTime.Now)
+                    {
+                        return new AuthResult()
+                        {
+                            Result = false,
+                            Errors = new List<string>()
+                            {
+                                "Expired token"
+                            }
+                        };
+                    }
+
+                    var storedToken =
+                        await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenRequest.RefreshToken);
+
+                    if (storedToken == null)
+                        return new AuthResult()
+                        {
+                            Result = false,
+                            Errors = new List<string>()
+                            {
+                                "Invalid token"
+                            }
+                        };
+
+                    if (storedToken.IsUsed)
+                        return new AuthResult()
+                        {
+                            Result = false,
+                            Errors = new List<string>()
+                            {
+                                "Token is used"
+                            }
+                        };
+                    
+                    if (storedToken.IsRevoked)
+                        return new AuthResult()
+                        {
+                            Result = false,
+                            Errors = new List<string>()
+                            {
+                                "Token is revoked"
+                            }
+                        };
+
+                    var jti = tokenInVerification.Claims.FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Jti)
+                        .Value;
+                    
+                    if (storedToken.JwtId != jti)
+                        return new AuthResult()
+                        {
+                            Result = false,
+                            Errors = new List<string>()
+                            {
+                                "Invalid JwtId"
+                            }
+                        };
+                    
+                    if (storedToken.ExpireDate < DateTime.Now )
+                        return new AuthResult()
+                        {
+                            Result = false,
+                            Errors = new List<string>()
+                            {
+                                "Expired token"
+                            }
+                        };
+
+                    storedToken.IsUsed = true;
+                    _context.RefreshTokens.Update(storedToken);
+                    await _context.SaveChangesAsync();
+
+                    var dbUser = await _userManager.FindByIdAsync(storedToken.UserId);
+                    var role = await _roleManager.FindByIdAsync(storedToken.UserId);
+                    
+                    return await GenerateJwtToken(dbUser);
+                }
+                catch (Exception e)
+                {
+                    return new AuthResult()
+                    {
+                        Result = false,
+                        Errors = new List<string>()
+                        {
+                            "Server error"
+                        }
+                    };
+                }
+                
+                
+            }
+
+            private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
+            {
+                var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                dateTimeVal = dateTimeVal.AddSeconds(unixTimeStamp).ToUniversalTime();
+
+                return dateTimeVal;
+            }
+            
             [Route("Login")]
             [HttpPost]
-
             public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequest)
             {
                 if (ModelState.IsValid)
@@ -104,13 +266,8 @@ namespace Projekt.Controllers
                             Result = false
                         });
                     // await _roleManager.FindByIdAsync(_roleManager.GetRoleIdAsync();
-                    var jwtToken = GenerateJwtToken(existing_user, role);
-                    return Ok(new AuthResult()
-                    {
-                        Token = jwtToken,
-                        User = existing_user,
-                        Result = true
-                    });
+                    var jwtToken = await GenerateJwtToken(existing_user);
+                    return Ok(jwtToken);
                 }
                 return BadRequest(new AuthResult()
                 {
@@ -121,12 +278,12 @@ namespace Projekt.Controllers
                     Result = false
                 });
             }
-            private string GenerateJwtToken(IdentityUser user, IdentityRole role)
+            private async Task<AuthResult> GenerateJwtToken(IdentityUser user)
             {
                 var jwtTokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
+                var role = await _roleManager.FindByIdAsync(user.Id);
                 var tokenDescriptor = new SecurityTokenDescriptor()
-
                 {
                     Subject = new ClaimsIdentity(new[]
                     {
@@ -140,7 +297,34 @@ namespace Projekt.Controllers
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
                 };
                 var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-                return jwtTokenHandler.WriteToken(token);
+                var jwtToken =  jwtTokenHandler.WriteToken(token);
+                var refreshToken = new RefreshToken()
+                {
+                    JwtId = token.Id,
+                    Token = RandomStringGeneration(23),
+                    AddedDate = DateTime.UtcNow,
+                    ExpireDate = DateTime.UtcNow.AddMonths(1),
+                    IsRevoked = false,
+                    IsUsed = false,
+                    UserId = user.Id
+
+                };
+                await _context.RefreshTokens.AddAsync(refreshToken);
+                await _context.SaveChangesAsync();
+                
+                return new AuthResult()
+                {
+                    Token = jwtToken,
+                    RefreshToken = refreshToken.Token,
+                    Result = true
+                };
+            }
+
+            private string RandomStringGeneration(int length)
+            {
+                var random = new Random();
+                var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890abcdefghijklmnopqrtsuvwxyz";
+                return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
             }
         }
     }
