@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data;
+using System.Linq;
 
 namespace Projekt.Controllers
 {
@@ -207,7 +208,6 @@ namespace Projekt.Controllers
                     await _context.SaveChangesAsync();
 
                     var dbUser = await _userManager.FindByIdAsync(storedToken.UserId);
-                    var role = await _roleManager.FindByIdAsync(storedToken.UserId);
                     
                     return await GenerateJwtToken(dbUser);
                 }
@@ -282,7 +282,13 @@ namespace Projekt.Controllers
             {
                 var jwtTokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
-                var role = await _roleManager.FindByIdAsync(user.Id);
+                var roles = await _userManager.GetRolesAsync(user);
+                IdentityRole roleName = null;
+                if (roles.Any())
+                {
+                    var role = roles.FirstOrDefault();
+                    roleName = await _roleManager.FindByNameAsync(role);
+                }
                 var tokenDescriptor = new SecurityTokenDescriptor()
                 {
                     Subject = new ClaimsIdentity(new[]
@@ -291,7 +297,7 @@ namespace Projekt.Controllers
                     new Claim(JwtRegisteredClaimNames.Sub,user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Iat,DateTime.Now.ToUniversalTime().ToString()),
-                    new Claim(ClaimTypes.Role,role.Name)
+                    new Claim(ClaimTypes.Role,roleName.Name)
                 }),
                     Expires = DateTime.UtcNow.Add(TimeSpan.Parse(_configuration.GetSection("JwtConfig:ExpiryTimeFrame").Value)),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
