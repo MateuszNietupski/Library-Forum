@@ -66,10 +66,16 @@ namespace Projekt.Controllers
                         {
                             await _roleManager.CreateAsync(new IdentityRole("User"));
                         }
+
                         await _userManager.AddToRoleAsync(newUser, "User");
-                        var token = await GenerateJwtToken(newUser);
-                        return Ok(token); 
+
+                        return Ok(new AuthResult()
+                        {
+                            Result = true
+                        });
+                        
                     }
+
                     return BadRequest(new AuthResult()
                     {
                         Errors = new List<string>()
@@ -121,7 +127,7 @@ namespace Projekt.Controllers
                 {
                     _tokenValidationParameters.ValidateLifetime = false;
 
-                    var tokenInVerification = jwtTokenHandler.ValidateToken(tokenRequest.Token, _tokenValidationParameters, out var validatedToken);
+                    var tokenInVerification = jwtTokenHandler.ValidateToken(tokenRequest.AccessToken, _tokenValidationParameters, out var validatedToken);
 
                     if (validatedToken is JwtSecurityToken jwtSecurityToken)
                     {
@@ -135,7 +141,7 @@ namespace Projekt.Controllers
                         .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
 
                     var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
-                    if (expiryDate > DateTime.Now)
+                    if (expiryDate < DateTime.Now)
                     {
                         return new AuthResult()
                         {
@@ -233,7 +239,58 @@ namespace Projekt.Controllers
 
                 return dateTimeVal;
             }
-            
+            [Route("/addWorker")]
+            [HttpPost]
+  
+            public async Task<IActionResult> RegisterWorker([FromBody] RegisterDTO requestDto)
+            {
+                if (ModelState.IsValid)
+                {
+                    var user_exist = await _userManager.FindByEmailAsync(requestDto.Email);
+                    if (user_exist != null)
+                    {
+                        return BadRequest(new AuthResult()
+                        {
+                            Result = false,
+                            Errors = new List<string>()
+                            {
+                                "Email already exist"
+                            }
+                        });
+                    }
+                    var new_user = new AppUser()
+                    {
+                        Email = requestDto.Email,
+                        UserName = requestDto.Name,
+                        
+
+
+                    };
+                    var is_created = await _userManager.CreateAsync(new_user, requestDto.Password);
+
+
+                    if (is_created.Succeeded)
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                        var role = new IdentityRole("Admin");
+                        await _userManager.AddToRoleAsync(new_user, "Admin");
+                        var token = GenerateJwtToken(new_user);
+                        return Ok(new AuthResult()
+                        {
+                            Result = true,                     
+                        });
+                    }
+                    return BadRequest(new AuthResult()
+                    {
+                        Errors = new List<string>()
+                        {
+                            "Server error"
+                        },
+                        Result = false
+                    });
+                }
+                return BadRequest();
+            }
             [Route("Login")]
             [HttpPost]
             public async Task<IActionResult> Login([FromBody] LoginRequestDTO loginRequest)
@@ -320,7 +377,7 @@ namespace Projekt.Controllers
                 
                 return new AuthResult()
                 {
-                    Token = jwtToken,
+                    AccessToken = jwtToken,
                     RefreshToken = refreshToken.Token,
                     Result = true
                 };
