@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Projekt.Configuration;
 using Projekt.Data;
 using System.Text;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,11 +20,12 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
+            
     });
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -71,6 +73,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSingleton(tokenValidationParameter);
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -79,6 +82,16 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(app.Environment.ContentRootPath, "wwwroot", "GalleryImages")),
+    RequestPath = "/GalleryImages"
+});
+
+app.UseDirectoryBrowser();
 
 app.UseHttpsRedirection();
 

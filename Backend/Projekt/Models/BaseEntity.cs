@@ -8,5 +8,6 @@ public class BaseEntity
     public DateTime DateAdded { get; set; } = DateTime.UtcNow;
     [Comment("Data aktualizacji")]
     public DateTime DateUpdated { get; set; } = DateTime.UtcNow;
-    public int Id { get; set; }
+    
+    public Guid Id { get; set; }
 }
