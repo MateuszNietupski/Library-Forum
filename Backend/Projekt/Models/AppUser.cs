@@ -4,5 +4,6 @@ namespace Projekt.Models
 {
     public class AppUser : IdentityUser
     {
+        
     }
 }
