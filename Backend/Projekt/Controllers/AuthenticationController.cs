@@ -16,12 +16,12 @@ namespace Projekt.Controllers
     [ApiController] 
         public class AuthenticationController : ControllerBase
         {
-            private readonly UserManager<IdentityUser> _userManager;
+            private readonly UserManager<AppUser> _userManager;
             private readonly IConfiguration _configuration;
             private readonly RoleManager<IdentityRole> _roleManager;
             private readonly TokenValidationParameters _tokenValidationParameters;
             private readonly AppDbContext _context;
-            public AuthenticationController(UserManager<IdentityUser> userManager,
+            public AuthenticationController(UserManager<AppUser> userManager,
                 IConfiguration configuration,
                 AppDbContext context,
                 RoleManager<IdentityRole> roleManager,
@@ -51,7 +51,7 @@ namespace Projekt.Controllers
                         }
                         });
                     }
-                    var newUser = new IdentityUser()
+                    var newUser = new AppUser()
                     {
                         Email = registerDto.Email,
                         UserName = registerDto.Name
@@ -335,7 +335,7 @@ namespace Projekt.Controllers
                     Result = false
                 });
             }
-            private async Task<AuthResult> GenerateJwtToken(IdentityUser user)
+            private async Task<AuthResult> GenerateJwtToken(AppUser user)
             {
                 var jwtTokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);

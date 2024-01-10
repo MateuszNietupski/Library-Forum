@@ -10,9 +10,10 @@ const AuthContext = createContext({
 
 const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem(LOCAL_STORAGE.accessToken));
-
+    
     const login = useCallback(() => {
         setIsLoggedIn(true);
+        
       }, []);
 
     const logout = useCallback(() => {

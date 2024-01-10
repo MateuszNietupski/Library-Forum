@@ -39,13 +39,23 @@ public class ImageController : ControllerBase
 
         var newImage = new Image
         {
+            Id = new Guid(),
             fileName = FileName,
             filePath = $"/GalleryImages/{FileName}"
         };
-
+        var max = _context.GalleryDisplaySequence
+            .Select(g => g.Sequence)
+            .ToList()
+            .DefaultIfEmpty(0)
+            .Max();
+        max += 1;
+        _context.GalleryDisplaySequence.Add(new GalleryDisplaySequence
+        {
+            Id = newImage.Id,
+            Sequence = max,
+        });
         _context.Images.Add(newImage);
         await _context.SaveChangesAsync();
-
         return Ok();
     }
 
@@ -53,7 +63,38 @@ public class ImageController : ControllerBase
     [HttpGet]
     public IActionResult GetGallery()
     {
-        var gallery = _context.Images.ToList();
+        var sequence = _context.GalleryDisplaySequence.ToList();
+        var gallery = _context.Images
+            .Where(i => sequence.Contains(i.Id))
+            .OrderBy(i => sequence)
+            .ToList();
         return Ok(gallery);
+    }
+
+    [Route("/api/updateGallerySequence")]
+    [HttpPatch]
+    public IActionResult PatchGallerySequence([FromBody] List<Image> gallery)
+    {
+        if (gallery == null || !gallery.Any())
+        {
+            return BadRequest("Pusta lista zdjęć");
+        }
+        
+        try
+        {
+            _context.GalleryDisplaySequence.RemoveRange(_context.GalleryDisplaySequence);
+            
+            foreach (var image in gallery)
+            {
+                _context.GalleryDisplaySequence.Add(new GalleryDisplaySequence { Id = image.Id });
+            }
+            _context.SaveChanges();
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest($"Wystąpił błąd: {e.Message}");
+        }
     }
 }

@@ -5,7 +5,10 @@ const Home = () => {
     
     
     return (
-        <Gallery/>
+        
+        <>
+            <Gallery/>
+        </>
     );
 
 };

@@ -7,6 +7,7 @@ using Projekt.Data;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
+using Projekt.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +43,7 @@ builder.Services.AddEntityFrameworkNpgsql()
     .AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection")));
 
-builder.Services.AddDefaultIdentity<IdentityUser>()
+builder.Services.AddDefaultIdentity<AppUser>()
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>();
 

@@ -14,22 +14,35 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { PATHS } from '../utils/consts';
 import { useNavigate } from 'react-router-dom';
-
+import * as Yup from 'yup';
+import {useFormik} from "formik";
 
 
 export default function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [errors, setErrors] = useState([]);
+  
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-      axios.post(ENDPOINTS.register, {
-        email,
-        password,
-        name
-      }).then(response =>{
+  
+  const validationSchema = Yup.object({
+    name: Yup.string().required('Pole wymagane'),
+    email: Yup.string().email('Nieprawidłowy adres email').required('Pole wymagane'),
+    password: Yup.string()
+        .required('Pole wymagane')
+        .min(8,'Hasło musi mieć conajmniej 8 znaków')
+        .matches(/[A-Z]/, 'Hasło musi zawierać co najmniej jedną dużą literę')
+        .matches(/[!@#$%^&*(),.?":{}|<>]/, 'Hasło musi zawierać co najmniej jeden znak specjalny')
+        .matches(/[0-9]/, 'Haslo musi zawierac co najmniej jedną literę')
+  });
+  
+  const formik = useFormik({
+    initialValues: {
+      name: '',
+      email: '',
+      password: ''
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      axios.post(ENDPOINTS.register,values).then(response =>{
         if (response.data.result) {
           navigate(PATHS.login);
         } else {
@@ -37,11 +50,12 @@ export default function Register() {
           alert(response.data.errors);
         }
       })
-      .catch(error => {
-        
-        console.error('There was an error!', error);
-      });
-  };
+          .catch(error => {
+
+            console.error('There was an error!', error);
+          });
+    }
+  });
 
   return (
       <Container component="main" maxWidth="xs">
@@ -60,7 +74,7 @@ export default function Register() {
           <Typography component="h1" variant="h5">
             Rejestracja
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component="form" noValidate onSubmit={formik.handleSubmit} sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
@@ -69,9 +83,11 @@ export default function Register() {
                   required
                   fullWidth
                   id="name"
-                  label="name"
-                  value={name} 
-                  onChange={(event) => setName(event.target.value)}
+                  label="Name"
+                  value={formik.values.name} 
+                  onChange={formik.handleChange}
+                  error={formik.touched.name && Boolean(formik.errors.name)}
+                  helperText={formik.touched.name && formik.errors.name}
                   autoFocus
                 />
               </Grid>
@@ -82,8 +98,10 @@ export default function Register() {
                   id="email"
                   label="Email Address"
                   name="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
+                  helperText={formik.touched.email && formik.errors.email}
                   autoComplete="email"
                 />
               </Grid>
@@ -95,8 +113,10 @@ export default function Register() {
                   label="Password"
                   type="password"
                   id="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
+                  value={formik.values.password}
+                  onChange={formik.handleChange}
+                  error={formik.touched.password && Boolean(formik.errors.password)}
+                  helperText={formik.touched.password && formik.errors.password}
                   autoComplete="new-password"
                 />
               </Grid>

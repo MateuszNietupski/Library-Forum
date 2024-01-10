@@ -5,20 +5,21 @@ export const ENDPOINTS = {
     login : `${baseUrl}/api/auth/Login`,
     register : `${baseUrl}/api/auth/Register`,
     refreshToken : `${baseUrl}/api/auth/RefreshToken`,
-    GETNEWSHORT: `${baseUrl}/api/News/getNewsShortcuts`,
-    ADDNEWS: `${baseUrl}/api/newsAdd`,
-    DELETENEWS: `${baseUrl}/api/News/deleteNews`,
-    GETGALLERY: `${baseUrl}/api/getGallery`
+    GETGALLERY: `${baseUrl}/api/getGallery`,
+    getForumCategories: `${baseUrl}/api/getCategories`
 }
 
 export const PATHS = {
     home: '/',
     login: '/login',
     register: '/register',
-    addNews: '/addNews'
+    addNews: '/addNews',
+    forum: '/forum',
+    adminPanel: '/adminPanel'
 }
 
 export const LOCAL_STORAGE = {
     accessToken: 'access_token',
-    refreshToken: 'refresh_token'
+    refreshToken: 'refresh_token',
+    role: 'role'
 };
