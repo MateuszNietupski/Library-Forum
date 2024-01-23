@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting.Internal;
 using Projekt.Data;
 using Projekt.Models;
 using Projekt.Models.DTOs;
+using Projekt.Models.DTOs.Requests;
 
 namespace Projekt.Controllers;
 
@@ -37,9 +39,10 @@ public class ImageController : ControllerBase
             await imageDto.File.CopyToAsync(stream);
         }
 
+        var id = Guid.NewGuid();
         var newImage = new Image
         {
-            Id = new Guid(),
+            Id = id,
             fileName = FileName,
             filePath = $"/GalleryImages/{FileName}"
         };
@@ -49,11 +52,13 @@ public class ImageController : ControllerBase
             .DefaultIfEmpty(0)
             .Max();
         max += 1;
-        _context.GalleryDisplaySequence.Add(new GalleryDisplaySequence
+        
+        var gds = new GalleryDisplaySequence
         {
             Id = newImage.Id,
             Sequence = max,
-        });
+        };
+        _context.GalleryDisplaySequence.Add(gds);
         _context.Images.Add(newImage);
         await _context.SaveChangesAsync();
         return Ok();
@@ -61,32 +66,37 @@ public class ImageController : ControllerBase
 
     [Route("/api/getGallery")]
     [HttpGet]
+    [Authorize(Roles = "User")]
     public IActionResult GetGallery()
     {
-        var sequence = _context.GalleryDisplaySequence.ToList();
+        var sequence = _context.GalleryDisplaySequence.ToList<GalleryDisplaySequence>();
         var gallery = _context.Images
-            .Where(i => sequence.Contains(i.Id))
-            .OrderBy(i => sequence)
-            .ToList();
+            .Join(_context.GalleryDisplaySequence,
+                image => image.Id,
+                gallery => gallery.Id,
+                (image, gallery) => new { Image = image, Sequence = gallery.Sequence })
+            .OrderBy(x => x.Sequence)
+            .Select(x => x.Image)
+            .ToList<Image>();
         return Ok(gallery);
     }
 
     [Route("/api/updateGallerySequence")]
     [HttpPatch]
-    public IActionResult PatchGallerySequence([FromBody] List<Image> gallery)
+    [Authorize(Roles = "User")]
+    public IActionResult PatchGallerySequence([FromBody] List<UpdateGallerySequenceDTO> gallery)
     {
-        if (gallery == null || !gallery.Any())
-        {
-            return BadRequest("Pusta lista zdjęć");
-        }
-        
         try
         {
-            _context.GalleryDisplaySequence.RemoveRange(_context.GalleryDisplaySequence);
+           // _context.GalleryDisplaySequence.RemoveRange(_context.GalleryDisplaySequence);
             
             foreach (var image in gallery)
             {
-                _context.GalleryDisplaySequence.Add(new GalleryDisplaySequence { Id = image.Id });
+                var galleryImage = _context.GalleryDisplaySequence.FirstOrDefault(g => g.Id == image.id);
+                if (galleryImage != null)
+                {
+                    galleryImage.Sequence = image.sequence;
+                }
             }
             _context.SaveChanges();
 

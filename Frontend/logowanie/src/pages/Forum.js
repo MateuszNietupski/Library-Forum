@@ -5,6 +5,8 @@ import Post from "./Post";
 import PostList from "./PostList";
 import {ENDPOINTS} from "../utils/consts";
 import {BrowserRouter as Router,Route,Routes,Link} from "react-router-dom";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
 
 const Forum = () => {
     
@@ -19,15 +21,7 @@ const Forum = () => {
                console.log('Blad pobierania danych', error) 
             });
     }, []);
-
-    const [openSubcategories, setOpenSubcategories] = React.useState({});
-
-    const handleToggleSubcategory = (category) => {
-        setOpenSubcategories((prevOpen) => ({
-            ...prevOpen,
-            [category]: !prevOpen[category],
-        }));
-    };
+    
 
     return (
         
@@ -38,20 +32,21 @@ const Forum = () => {
                             <Typography variant="h5" component="div">
                                 {category.name}
                             </Typography>
-                            <List>
+                            <Grid container>
                                 {category.subcategories && category.subcategories.map((subcategory) => (
-                                    <ListItem key={subcategory.name} button>
-                                        <ListItemText primary={subcategory.name}/>
-                                    </ListItem>
+                                    <Grid item xs={10} sm={5} md={3} lg={2} key={subcategory.name} button>
+                                        <Button 
+                                            component={Link}
+                                            to={`/forum/${category.id}/subcategory/${subcategory.id}`}>
+                                            {subcategory.name}
+                                        </Button>
+                                        
+                                    </Grid>
                                 ))}
-                            </List>
+                            </Grid>
                         </CardContent>
                     </Card>
                 ))}
-                <Routes>
-                   // <Route path="/subcategories/:subcategoryId" component={PostList} />
-                   // <Route path="/posts/:postId" component={Post} />
-                </Routes>
             </div>
     );
 }

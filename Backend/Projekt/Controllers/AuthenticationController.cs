@@ -300,7 +300,6 @@ namespace Projekt.Controllers
                     
                     var existing_user = await _userManager.FindByEmailAsync(loginRequest.Email);
                     var user_role = await _userManager.GetRolesAsync(existing_user);
-                    // Może nie jest to idealne rzutowanie ale działa XD
                     IdentityRole role = new IdentityRole(user_role[0]);
                     if (existing_user == null)
                         return BadRequest(new AuthResult()
@@ -366,7 +365,7 @@ namespace Projekt.Controllers
                     JwtId = token.Id,
                     Token = RandomStringGeneration(23),
                     AddedDate = DateTime.UtcNow,
-                    ExpireDate = DateTime.UtcNow.AddMonths(1),
+                    ExpireDate = DateTime.UtcNow.AddMinutes(2),
                     IsRevoked = false,
                     IsUsed = false,
                     UserId = user.Id

@@ -6,7 +6,13 @@ export const ENDPOINTS = {
     register : `${baseUrl}/api/auth/Register`,
     refreshToken : `${baseUrl}/api/auth/RefreshToken`,
     GETGALLERY: `${baseUrl}/api/getGallery`,
-    getForumCategories: `${baseUrl}/api/getCategories`
+    updateGallerySequence: `${baseUrl}/api/updateGallerySequence`,
+    getForumCategories: `${baseUrl}/api/getCategories`,
+    getPost: `${baseUrl}/api/getPost`,
+    getForumPosts: `${baseUrl}/api/getPosts`,
+    getBooks: `${baseUrl}/api/getBooks`,
+    confirmationMail: `${baseUrl}/api/confirmationMail`,
+    addComment: `${baseUrl}/api/addComment`
 }
 
 export const PATHS = {
@@ -15,7 +21,11 @@ export const PATHS = {
     register: '/register',
     addNews: '/addNews',
     forum: '/forum',
-    adminPanel: '/adminPanel'
+    category: '/forum/:categoryId',
+    subcategory: '/forum/:categoryId/subcategory/:subcategoryId',
+    post: '/forum/:categoryId/subcategory/:subcategoryId/post/:postId',
+    adminPanel: '/adminPanel',
+    books: '/books'
 }
 
 export const LOCAL_STORAGE = {

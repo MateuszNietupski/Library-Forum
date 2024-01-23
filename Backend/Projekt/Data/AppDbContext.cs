@@ -14,6 +14,7 @@ namespace Projekt.Data
         public DbSet<ForumPost> ForumPosts { get; set; }
         public DbSet<ForumComment> ForumComments { get; set; }
         public DbSet<Image> Images { get; set; }
+        public DbSet<Book> Books { get; set; }
         public DbSet<GalleryDisplaySequence> GalleryDisplaySequence { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {

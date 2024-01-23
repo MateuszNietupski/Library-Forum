@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Projekt.Data;
 using Projekt.Models;
 using Projekt.Models.DTOs.Requests;
+using Projekt.Models.DTOs.Responses;
 
 namespace Projekt.Controllers;
 
@@ -104,5 +105,52 @@ public class ForumController : ControllerBase
           }).ToList()
       });
         return Ok(categories);
+    }
+    
+    [Route("/api/getPosts")]
+    [HttpGet]
+    public async Task<IActionResult> GetPosts(string subcategoryId)
+    {
+        Guid guid;
+        Guid.TryParse(subcategoryId,out guid);
+        var Posts = _context.ForumPosts
+            .Where(post => post.SubCategoryId == guid)
+            .ToList();
+        return Ok(Posts);
+    }
+    [Route("/api/getPost")]
+    [HttpGet]
+    public async Task<IActionResult> GetPost(string postId)
+    {
+        Guid guid;
+        Guid.TryParse(postId,out guid);
+        var Post = _context.ForumPosts
+            .Include(post => post.Comments)
+            .SingleOrDefault(post => post.Id == guid);
+
+        var response = new PostResponseDTO();
+        
+        if (Post != null)
+        {
+            response =  new PostResponseDTO()
+            {
+                Id = Post.Id,
+                Content = Post.Content,
+                Title = Post.Title,
+                Data = Post.DateUpdated,
+                Comments = Post.Comments.Select(comment => new CommentResponseDTO
+                {
+                    Id = comment.Id,
+                    Content = comment.Content,
+                    Data = comment.DateUpdated,
+                    User = _context.AppUsers
+                        .Where(user => user.Id == comment.UserId)
+                        .Select(u => u.UserName)
+                        .FirstOrDefault()
+                }).ToList<CommentResponseDTO>() ?? new List<CommentResponseDTO>()
+            };
+        }
+        
+        return Ok(response);
     }
 }

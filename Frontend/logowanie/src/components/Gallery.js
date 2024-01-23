@@ -3,6 +3,7 @@ import axios from "axios";
 import GalleryGrid from "./GalleryGrid";
 import { ENDPOINTS } from "../utils/consts";
 import DraggableGallery from "./DraggableGallery";
+import axiosAuth from "../utils/authInstance";
 
 const Gallery = () => {
     const [images,setImages] = useState([]);
@@ -10,7 +11,7 @@ const Gallery = () => {
     useEffect(() => {
         const fetchData = async () => {
         try {
-        const response = await axios.get(ENDPOINTS.GETGALLERY)
+        const response = await axiosAuth.get(ENDPOINTS.GETGALLERY)
         setImages(response.data);
         setIsLoading(false);
         } catch (error) {
@@ -25,7 +26,7 @@ const Gallery = () => {
     return (
         <div>
             <h1>Galeria</h1>
-            {isLoading ? null : <DraggableGallery images={images} />} 
+            {isLoading ? null : <GalleryGrid images={images} />} 
             
         </div>
     );
