@@ -6,8 +6,9 @@ import {jwtDecode} from "jwt-decode";
 import {useParams} from "react-router-dom";
 import axios from "axios";
 
-const CommentEditor = ({ onAddComment }) => {
-    const [newComment, setNewComment] = useState('');
+const PostEditor = ({ onAddComment }) => {
+    const [title, setNewTitle] = useState('');
+    const [content, setNewContent] = useState('');
     const token = localStorage.getItem('access_token');
     const { categoryId,subcategoryId,postId } = useParams();
     let userId;
@@ -16,22 +17,20 @@ const CommentEditor = ({ onAddComment }) => {
         const decodeToken = jwtDecode(token);
         userId = decodeToken.Id
     }
-    const handleCommentChange = (event) => {
-        setNewComment(event.target.value);
-    };
+  
     const request = {
-        Content: newComment,
-        UserId: userId,
-        PostId: postId
+        Title: title,
+        Content: content,
+        SubCategoryId: subcategoryId
     }
-    
-    
+
+
     const handleAddComment = () => {
-        if (newComment.trim() !== '') {
-            axios.post(ENDPOINTS.addComment, {
-                Content: newComment,
-                UserId: userId,
-                PostId: postId
+        if (title.trim() !== '') {
+            axios.post(ENDPOINTS.addPost, {
+                Title: title,
+                Content: content,
+                SubCategoryId: subcategoryId
             })
                 .then(console.log('ok'))
                 .catch(error => {
@@ -47,17 +46,27 @@ const CommentEditor = ({ onAddComment }) => {
                 multiline
                 rows={4}
                 variant="outlined"
-                label="Dodaj nowy komentarz"
-                value={newComment}
-                onChange={(event) => setNewComment(event.target.value)}
+                label="Tytuł"
+                value={title}
+                onChange={(event) => setNewTitle(event.target.value)}
+                fullWidth
+                margin="normal"
+            />
+            <TextField
+                multiline
+                rows={4}
+                variant="outlined"
+                label="Treść"
+                value={content}
+                onChange={(event) => setNewContent(event.target.value)}
                 fullWidth
                 margin="normal"
             />
             <Button variant="contained" color="primary" onClick={handleAddComment} fullWidth>
-                Dodaj komentarz
+                Dodaj Post
             </Button>
         </Box>
     );
 };
 
-export default CommentEditor;
+export default PostEditor;

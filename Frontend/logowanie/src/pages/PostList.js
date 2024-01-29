@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import axios from "axios";
 import {ENDPOINTS} from "../utils/consts";
 import Button from "@mui/material/Button";
+import PostEditor from "../components/PostEditor";
 
 const PostList = () => {
     console.log('Komponent PostList jest montowany');
@@ -25,9 +26,9 @@ const PostList = () => {
     }, [subcategoryId]);
 
     return(
-        <Grid container spacing={2}>
+        <Grid container spacing={2} styles={{margin: "20px"}}>
             {Posts ? (Posts.map((post) => (
-                <Grid item xs={10} sm={5} md={3} lg={2} key={post.id} button>
+                <Grid item xs={4}  key={post.id} button>
                     <Button 
                         component={Link}
                         to={`/forum/${categoryId}/subcategory/${subcategoryId}/post/${post.id}`}
@@ -48,7 +49,9 @@ const PostList = () => {
                 ))) : (
                     <p>Brak postów</p>
             )}
+            <PostEditor/>
         </Grid>
+        
     );
 }
 

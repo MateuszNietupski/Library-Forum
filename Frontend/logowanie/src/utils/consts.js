@@ -12,7 +12,8 @@ export const ENDPOINTS = {
     getForumPosts: `${baseUrl}/api/getPosts`,
     getBooks: `${baseUrl}/api/getBooks`,
     confirmationMail: `${baseUrl}/api/confirmationMail`,
-    addComment: `${baseUrl}/api/addComment`
+    addComment: `${baseUrl}/api/addComment`,
+    addPost: `${baseUrl}/api/addPost`
 }
 
 export const PATHS = {

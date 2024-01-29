@@ -66,7 +66,7 @@ public class ImageController : ControllerBase
 
     [Route("/api/getGallery")]
     [HttpGet]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "User,Admin")]
     public IActionResult GetGallery()
     {
         var sequence = _context.GalleryDisplaySequence.ToList<GalleryDisplaySequence>();
@@ -83,7 +83,7 @@ public class ImageController : ControllerBase
 
     [Route("/api/updateGallerySequence")]
     [HttpPatch]
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "User,Admin")]
     public IActionResult PatchGallerySequence([FromBody] List<UpdateGallerySequenceDTO> gallery)
     {
         try

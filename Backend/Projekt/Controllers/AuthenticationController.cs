@@ -340,9 +340,10 @@ namespace Projekt.Controllers
                 var key = Encoding.UTF8.GetBytes(_configuration.GetSection("JwtConfig:Secret").Value);
                 var roles = await _userManager.GetRolesAsync(user);
                 IdentityRole roleName = null;
+                string role = null;
                 if (roles.Any())
                 {
-                    var role = roles.FirstOrDefault();
+                    role = roles.FirstOrDefault();
                     roleName = await _roleManager.FindByNameAsync(role);
                 }
                 var tokenDescriptor = new SecurityTokenDescriptor()
@@ -350,10 +351,11 @@ namespace Projekt.Controllers
                     Subject = new ClaimsIdentity(new[]
                     {
                     new Claim("Id",user.Id),
+                    new Claim("role",role),
                     new Claim(JwtRegisteredClaimNames.Sub,user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Iat,DateTime.Now.ToUniversalTime().ToString()),
-                    new Claim(ClaimTypes.Role,roleName.Name)
+                    
                 }),
                     Expires = DateTime.UtcNow.Add(TimeSpan.Parse(_configuration.GetSection("JwtConfig:ExpiryTimeFrame").Value)),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)

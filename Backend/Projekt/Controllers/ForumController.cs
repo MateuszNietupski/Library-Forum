@@ -55,7 +55,7 @@ public class ForumController : ControllerBase
     }
     [Route("/api/addPost")]
     [HttpPost]
-    public async Task<IActionResult> AddPost([FromForm] AddPostDTO addPostDto )
+    public async Task<IActionResult> AddPost([FromBody] AddPostDTO addPostDto )
     {
         if (addPostDto.Title == null || addPostDto.SubCategoryId == null)
         {
@@ -73,7 +73,7 @@ public class ForumController : ControllerBase
     }
     [Route("/api/addComment")]
     [HttpPost]
-    public async Task<IActionResult> AddComment([FromForm] AddCommentDTO addCommentDto )
+    public async Task<IActionResult> AddComment([FromBody] AddCommentDTO addCommentDto )
     {
         if (addCommentDto.Content == null || addCommentDto.PostId == null)
         {
