@@ -1,8 +1,6 @@
 import React, {useState,useEffect} from "react";
-import axios from "axios";
 import GalleryGrid from "./GalleryGrid";
 import { ENDPOINTS } from "../utils/consts";
-import DraggableGallery from "./DraggableGallery";
 import axiosAuth from "../utils/authInstance";
 
 const Gallery = () => {

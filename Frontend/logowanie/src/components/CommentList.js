@@ -12,8 +12,13 @@ const CommentList = ({ comments }) => {
                                 <Box display="flex" alignItems="center" flexDirection="column">
                                     <Avatar />
                                     <Box marginTop="10px">
-                                        <Typography variant="subtitle1">{comment.user}</Typography>
+                                        {comment.user ? (
+                                            <Typography variant="subtitle1">{comment.user}</Typography>
+                                        ) : (
+                                            <Typography variant="subtitle1">Użytkownik usunięty</Typography>
+                                        )}
                                     </Box>
+
                                 </Box>
                                 <Box flex="1">
                                     <Typography variant="body1" align="center">

@@ -15,17 +15,12 @@ const ItemCart = () => {
     }
     const rentBooks = () => {
         
-        const request = {
-          UserId: userId,
-          Books: cartItems.map(item => ({
-              id: item.id,
-              name: item.name,
-              author: item.author,
-              bookQuantity: item.quantity
-          }))  
+        const loanDto = {
+            UserId: userId, 
+            BooksId: cartItems.map(item => item.id.toString())
         };
         
-        axios.post(ENDPOINTS.confirmationMail,request)
+        axios.post(ENDPOINTS.addLoan,loanDto)
             .then(() => {
                 clearCart();
             })

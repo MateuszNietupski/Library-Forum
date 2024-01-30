@@ -13,7 +13,11 @@ export const ENDPOINTS = {
     getBooks: `${baseUrl}/api/getBooks`,
     confirmationMail: `${baseUrl}/api/confirmationMail`,
     addComment: `${baseUrl}/api/addComment`,
-    addPost: `${baseUrl}/api/addPost`
+    addPost: `${baseUrl}/api/addPost`,
+    addLoan: `${baseUrl}/api/loanAdd`,
+    loanConfirm: `${baseUrl}/api/loanConfirm`,
+    getLoans: `${baseUrl}/api/loanGet`,
+    
 }
 
 export const PATHS = {

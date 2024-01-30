@@ -3,6 +3,7 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {ENDPOINTS} from "../utils/consts";
 import axiosAuth from "../utils/authInstance";
+import ConfirmLoans from "../components/ConfirmLoans";
 
 
 
@@ -27,6 +28,7 @@ const AdminPage = () => {
     return (
         <>
             {isLoading ? null : <DraggableGallery images={images} />}
+            <ConfirmLoans/>
         </>
     );
 
