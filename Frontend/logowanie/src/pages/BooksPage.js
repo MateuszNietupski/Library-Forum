@@ -4,9 +4,8 @@ import axios from "axios";
 import Container from "@mui/material/Container";
 import {Paper} from "@mui/material";
 import Grid from "@mui/material/Grid";
-import {useItemCart} from "../context/IterCartProvider";
+import {useItemCart} from "../context/ItemCartProvider";
 import Button from "@mui/material/Button";
-import ItemCart from "../components/ItemCart";
 
 const BooksPage = () => {
     const [books,setBooks] = useState([]);

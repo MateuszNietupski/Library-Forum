@@ -1,9 +1,10 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext } from 'react';
+import useLocalStorge from "../hooks/useLocalStorge";
 
 const ItemCartContext = createContext();
 
 export const ItemCartProvider = ({children}) => {
-    const [cartItems, setCartItems] = useState([]);
+    const [cartItems,setCartItems] = useLocalStorge("cartItems");
 
     const addItemToCart = (item) => {
         const existingItemIndex = cartItems.findIndex((cartItem) => cartItem.id === item.id);

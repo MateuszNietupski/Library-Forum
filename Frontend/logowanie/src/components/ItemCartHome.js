@@ -9,7 +9,7 @@ import {
     Typography,
 } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import {useItemCart} from "../context/IterCartProvider";
+import {useItemCart} from "../context/ItemCartProvider";
 import ItemCart from "./ItemCart";
 
 const ItemCartHome = () => {

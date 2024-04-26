@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import {Route,Routes,BrowserRouter} from 'react-router-dom';
 import  { AuthProvider }  from './context/AuthProvider';
 import {ThemeProvider} from "./context/ThemeProvider";
-import {ItemCartProvider} from "./context/IterCartProvider";
+import {ItemCartProvider} from "./context/ItemCartProvider";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -1,4 +1,4 @@
-import {useItemCart} from "../context/IterCartProvider";
+import {useItemCart} from "../context/ItemCartProvider";
 import Button from "@mui/material/Button";
 import axios from "axios";
 import {ENDPOINTS} from "../utils/consts";
