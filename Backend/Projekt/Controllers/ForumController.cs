@@ -1,3 +1,5 @@
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data;
@@ -12,79 +14,64 @@ namespace Projekt.Controllers;
 public class ForumController : ControllerBase
 {
     private readonly AppDbContext _context;
-
-    public ForumController(AppDbContext context)
+    private readonly IMapper _mapper;
+    public ForumController(AppDbContext context,IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
-
     [Route("/api/addCategory")]
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AddCategory([FromForm] AddCategoryDTO addCategoryDto )
     {
         if (addCategoryDto.Name == null)
         {
             return BadRequest();
         }
-
-        var newCategory = new ForumCategory()
-        {
-            Name = addCategoryDto.Name
-        };
+        var newCategory = _mapper.Map<Category>(addCategoryDto);
         _context.ForumCategories.Add(newCategory);
         await _context.SaveChangesAsync();
         return Ok();
     }
     [Route("/api/addSubCategory")]
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> AddSubCategory([FromForm] AddSubCategoryDTO addSubCategoryDto )
     {
         if (addSubCategoryDto.Name == null || addSubCategoryDto.CategoryId == null)
         {
             return BadRequest();
         }
-        
-        var newCategory = new ForumSubcategory()
-        {
-            Name = addSubCategoryDto.Name,
-            CategoryId = addSubCategoryDto.CategoryId
-        };
-        _context.ForumSubcategories.Add(newCategory);
+        var newSubCategory = _mapper.Map<Subcategory>(addSubCategoryDto);
+        _context.ForumSubcategories.Add(newSubCategory);
         await _context.SaveChangesAsync();
         return Ok();
     }
     [Route("/api/addPost")]
     [HttpPost]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> AddPost([FromBody] AddPostDTO addPostDto )
     {
         if (addPostDto.Title == null || addPostDto.SubCategoryId == null)
         {
             return BadRequest();
         }
-        var newPost = new ForumPost()
-        {
-            Title = addPostDto.Title,
-            Content = addPostDto.Content,
-            SubCategoryId = addPostDto.SubCategoryId
-        };
+        var newPost = _mapper.Map<Post>(addPostDto);
         _context.ForumPosts.Add(newPost);
         await _context.SaveChangesAsync();
         return Ok();
     }
     [Route("/api/addComment")]
     [HttpPost]
+    [Authorize(Roles = "Admin,User")]
     public async Task<IActionResult> AddComment([FromBody] AddCommentDTO addCommentDto )
     {
         if (addCommentDto.Content == null || addCommentDto.PostId == null)
         {
             return BadRequest();
         }
-        var newComment = new ForumComment()
-        {
-            Content = addCommentDto.Content,
-            PostId = addCommentDto.PostId,
-            UserId = addCommentDto.UserId
-        };
+        var newComment = _mapper.Map<Comment>(addCommentDto);
         _context.ForumComments.Add(newComment);
         await _context.SaveChangesAsync();
         return Ok();
@@ -93,64 +80,34 @@ public class ForumController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCategories()
     {
-        var categories = _context.ForumCategories.Select(c => new
-      {
-          Id = c.Id,
-          Name = c.Name,
-          Subcategories = c.Subcategories.Select(s => new
-          {              
-              Name = s.Name,
-              Id = s.Id,
-              Posts = s.Posts.ToList()
-          }).ToList()
-      });
-        return Ok(categories);
+        var categories = _context.ForumCategories
+            .Include(category => category.Subcategories)
+            .ToList();
+        var response = _mapper.Map<List<CategoriesResponseDTO>>(categories);
+        return Ok(response);
     }
-    
     [Route("/api/getPosts")]
     [HttpGet]
     public async Task<IActionResult> GetPosts(string subcategoryId)
     {
         Guid guid;
         Guid.TryParse(subcategoryId,out guid);
-        var Posts = _context.ForumPosts
+        var posts = _context.ForumPosts
             .Where(post => post.SubCategoryId == guid)
             .ToList();
-        return Ok(Posts);
+        return Ok(posts);
     }
     [Route("/api/getPost")]
     [HttpGet]
     public async Task<IActionResult> GetPost(string postId)
     {
         Guid guid;
-        Guid.TryParse(postId,out guid);
-        var Post = _context.ForumPosts
+        Guid.TryParse(postId, out guid);
+        var post = _context.ForumPosts
             .Include(post => post.Comments)
-            .SingleOrDefault(post => post.Id == guid);
-
-        var response = new PostResponseDTO();
-        
-        if (Post != null)
-        {
-            response =  new PostResponseDTO()
-            {
-                Id = Post.Id,
-                Content = Post.Content,
-                Title = Post.Title,
-                Data = Post.DateUpdated,
-                Comments = Post.Comments.Select(comment => new CommentResponseDTO
-                {
-                    Id = comment.Id,
-                    Content = comment.Content,
-                    Data = comment.DateUpdated,
-                    User = _context.AppUsers
-                        .Where(user => user.Id == comment.UserId)
-                        .Select(u => u.UserName)
-                        .FirstOrDefault()
-                }).ToList<CommentResponseDTO>() ?? new List<CommentResponseDTO>()
-            };
-        }
-        
+            .ThenInclude(c => c.AppUser)
+            .FirstOrDefault(fp => fp.Id.Equals(guid));
+        var response = _mapper.Map<PostResponseDTO>(post);
         return Ok(response);
     }
 }

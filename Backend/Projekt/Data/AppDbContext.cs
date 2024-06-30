@@ -9,10 +9,10 @@ namespace Projekt.Data
     {
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<AppUser> AppUsers { get; set; }
-        public DbSet<ForumCategory> ForumCategories { get; set; }
-        public DbSet<ForumSubcategory> ForumSubcategories { get; set; }
-        public DbSet<ForumPost> ForumPosts { get; set; }
-        public DbSet<ForumComment> ForumComments { get; set; }
+        public DbSet<Category> ForumCategories { get; set; }
+        public DbSet<Subcategory> ForumSubcategories { get; set; }
+        public DbSet<Post> ForumPosts { get; set; }
+        public DbSet<Comment> ForumComments { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<GalleryDisplaySequence> GalleryDisplaySequence { get; set; }
@@ -28,24 +28,24 @@ namespace Projekt.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<ForumSubcategory>()
-                .HasOne(c => c.ForumCategory)
+            builder.Entity<Subcategory>()
+                .HasOne(c => c.Category)
                 .WithMany(s => s.Subcategories)
                 .HasForeignKey(c => c.CategoryId)
                 .IsRequired();
-            builder.Entity<ForumPost>()
-                .HasOne(s => s.ForumSubcategory)
+            builder.Entity<Post>()
+                .HasOne(s => s.Subcategory)
                 .WithMany(p => p.Posts )
                 .HasForeignKey(c => c.SubCategoryId);
-            builder.Entity<ForumPost>()
+            builder.Entity<Post>()
                 .HasOne(u => u.AppUser)
                 .WithMany(p => p.Posts)
                 .HasForeignKey(k => k.UserId);
-            builder.Entity<ForumComment>()
-                .HasOne(p => p.ForumPost)
+            builder.Entity<Comment>()
+                .HasOne(p => p.Post)
                 .WithMany(c => c.Comments )
                 .HasForeignKey(k => k.PostId);
-            builder.Entity<ForumComment>()
+            builder.Entity<Comment>()
                 .HasOne(u => u.AppUser)
                 .WithMany(c => c.Comments)
                 .HasForeignKey(k => k.UserId);

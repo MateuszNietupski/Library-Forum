@@ -5,5 +5,5 @@ public class CommentResponseDTO
     public Guid Id { get; set; } 
     public string Content { get; set; } 
     public DateTime Data { get; set; }  
-    public string? User { get; set; } 
+    public string? UserName { get; set; } 
 }

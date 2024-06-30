@@ -7,6 +7,7 @@ using Projekt.Data;
 using System.Text;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
+using Projekt.MappersProfiles;
 using Projekt.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
+builder.Services.AddAutoMapper(typeof(ForumMapperProfile).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -60,7 +62,6 @@ var tokenValidationParameter = new TokenValidationParameters()
     RequireExpirationTime = false,
     ValidateLifetime = true
 };
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
