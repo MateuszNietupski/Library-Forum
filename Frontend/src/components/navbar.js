@@ -7,18 +7,11 @@ import SunIcon from "../icons/SunIcon";
 import SwitchTheme from "./SharedLayout/SwitchTheme";
 import MoonIcon from "../icons/MoonIcon";
 import ItemCartHome from "./ItemCartHome";
-import {jwtDecode} from "jwt-decode";
 
 
 const Header = () => {
     const {isLoggedIn, logout} = useContext(AuthContext);
-    const token = localStorage.getItem('access_token');
-    let role;
-    if(token)
-    {
-        const decodeToken = jwtDecode(token);
-        role = decodeToken.role
-    }
+    
     
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -31,9 +24,7 @@ const Header = () => {
                         <MoonIcon/>
                         <Navbar.Brand as={Link} to={PATHS.home}>Home</Navbar.Brand>
                         <Navbar.Brand as={Link} to={PATHS.forum}>Forum</Navbar.Brand>
-                        {role === "Admin" ? (
                         <Navbar.Brand as={Link} to={PATHS.adminPanel}>AdminPanel</Navbar.Brand>
-                        ) : (null)}
                         <Navbar.Brand as={Link} to={PATHS.books}>Books</Navbar.Brand>
                         <Nav className="me-auto">
                             {isLoggedIn && (
