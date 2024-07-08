@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Net.Mime;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Projekt.Models;
 
@@ -11,7 +12,7 @@ namespace Projekt.Data
         public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Category> ForumCategories { get; set; }
         public DbSet<Subcategory> ForumSubcategories { get; set; }
-        public DbSet<Post> ForumPosts { get; set; }
+        public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> ForumComments { get; set; }
         public DbSet<Image> Images { get; set; }
         public DbSet<Book> Books { get; set; }
@@ -51,6 +52,16 @@ namespace Projekt.Data
                 .HasForeignKey(k => k.UserId);
             builder.Entity<LoanBook>()
                 .HasKey(lb => new { lb.BookId, lb.LoanId });
+            builder.Entity<Image>()
+                .HasOne(i => i.Comment)
+                .WithMany(c => c.Images)
+                .HasForeignKey(i => i.CommentId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Image>()
+                .HasOne(i => i.Post)
+                .WithMany(c => c.Images)
+                .HasForeignKey(i => i.PostId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
         
     }

@@ -11,10 +11,14 @@ public class ForumMapperProfile : Profile
     {
         CreateMap<Post, PostResponseDTO>()
             .ForMember(dest => dest.Comments,
-                opt => opt.MapFrom(src => src.Comments));
+                opt => opt.MapFrom(src => src.Comments))
+            .ForMember(dest => dest.Data,
+            opt => opt.MapFrom(src => src.DateAdded));
         CreateMap<Comment, CommentResponseDTO>()
             .ForMember(dest => dest.UserName,
-                opt => opt.MapFrom(src => src.AppUser.UserName));
+                opt => opt.MapFrom(src => src.AppUser.UserName))
+            .ForMember(dest => dest.Data,
+                opt => opt.MapFrom(src => src.DateAdded));
         CreateMap<Category, CategoriesResponseDTO>()
             .ForMember(dest => dest.Subcategories,
                 opt => opt.MapFrom(src => src.Subcategories));

@@ -1,18 +1,21 @@
-import React, {useEffect, useState} from "react";
-import {Avatar, Box, Card, CardContent, Paper} from "@mui/material";
-import Typography from "@mui/material/Typography";
+import React, {useCallback, useEffect, useState} from "react";
+import {Avatar, Box, Paper,Typography,Button,Container} from "@mui/material";
 import CommentList from "../components/CommentList";
 import {useParams} from "react-router-dom";
 import axios from "axios";
 import {ENDPOINTS} from "../utils/consts";
 import CommentEditor from "../components/CommentEditor";
+import {DateFormat} from "../utils/DateFormat";
 
 const Post = () => {
-    
-    const [Post,setPost] = useState()
-    const { categoryId,subcategoryId,postId } = useParams();
+    const [post,setPost] = useState()
+    const {postId} = useParams();
     const [isLoading,setIsLoading] = useState(true);
-    useEffect(() => {
+    const [isAddCommentVisible,setIsAddCommentVisible] = useState(false);
+    const toggleAddCommentVisible = () => {
+        setIsAddCommentVisible(!isAddCommentVisible);
+    }
+    const fetchData = useCallback(() => {
         axios.get(ENDPOINTS.getPost,{
             params: {postId}
         })
@@ -22,37 +25,57 @@ const Post = () => {
             }).catch(err => {
             console.log('Blad pobierania danych', err)
         });
-    }, [postId])
+    },[postId]);
+    useEffect(() => {
+        fetchData();
+    },[fetchData])
     
     return(
-        
             isLoading ? null : (
-                <Paper>
-                    <Paper elevation={3} style={{ padding: '10px', width: '100%' }}>
-                        <Box display="flex" alignItems="center" justifyContent="space-between">
-                            <Box display="flex" alignItems="center" flexDirection="column">
-                                <Box marginTop="10px">
-                                    <Typography variant="title">{Post.title}</Typography>
+                <Container>
+                    <Paper elevation={3} display="flex" alignItems="center" justifyContent="space-between" sx={{p:6,m:4}}>
+                        <Box marginTop="20px">
+                            <Typography variant="h4">{post.title}</Typography>
+                        </Box>
+                        <Box sx={{
+                            textAlign: 'center',
+                            mt: 5,
+                            mb: 2,
+                            wordWrap: 'break-word',
+                            overflowWrap: 'break-word',
+                            wordBreak: 'break-word',
+                            width: '100%'  }}>
+                            <Typography variant="body1" textAlign="center" mt={5} mb={2}>
+                                {post.content}
+                            </Typography>
+                        </Box>
+                        <Box display="flex">
+                                <Box display="flex" alignItems="center" flexDirection="column">
+                                    <Avatar />
+                                    <Box marginTop="10px">
+                                        {post.userName ? (
+                                            <Typography variant="subtitle1">{post.userName}</Typography>
+                                        ) : (
+                                            <Typography variant="subtitle1">Użytkownik usunięty</Typography>
+                                        )}
+                                    </Box>
                                 </Box>
-                            </Box>
-                            <Box flex="1">
-                                <Typography variant="body1" align="center">
-                                    {Post.content}
-                                </Typography>
-                            </Box>
-                            <Box>
-                                <Typography variant="caption">{Post.data.toLocaleString()}</Typography>
+                            <Box flexGrow={1} textAlign="right">
+                                <Typography variant="caption">{DateFormat(post.data)}</Typography>
                             </Box>
                         </Box>
-                    </Paper> 
-                    <CommentEditor/>
-                    <CommentList comments={Post.comments}/>
-                </Paper>
-                
+                    </Paper>
+                    {isAddCommentVisible ?
+                        (<CommentEditor onCommentSubmit={() => {
+                            toggleAddCommentVisible();
+                            fetchData();
+                        }}/>) : null}
+                        <Button onClick={toggleAddCommentVisible} variant="outlined" fullWidth>
+                            {!isAddCommentVisible ? 'Dodaj komentarz' : 'Anuluj'}
+                        </Button>
+                    <CommentList comments={post.comments}/>
+                </Container>
             )
     );
-
 }
-                
-
 export default Post;

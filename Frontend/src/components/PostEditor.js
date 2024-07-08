@@ -4,40 +4,34 @@ import axiosAuth from "../utils/authInstance";
 import {ENDPOINTS} from "../utils/consts";
 import {jwtDecode} from "jwt-decode";
 import {useParams} from "react-router-dom";
-import axios from "axios";
 
-const PostEditor = ({ onAddComment }) => {
+const PostEditor = ({onAddPostSubmit}) => {
     const [title, setNewTitle] = useState('');
     const [content, setNewContent] = useState('');
     const token = localStorage.getItem('access_token');
-    const { categoryId,subcategoryId,postId } = useParams();
+    const {subcategoryId} = useParams();
     let userId;
     if(token)
     {
         const decodeToken = jwtDecode(token);
         userId = decodeToken.Id
     }
-  
     const request = {
         Title: title,
         Content: content,
         SubCategoryId: subcategoryId
     }
-
-
-    const handleAddComment = () => {
+    
+    const handleAddPost = () => {
         if (title.trim() !== '') {
-            axios.post(ENDPOINTS.addPost, {
-                Title: title,
-                Content: content,
-                SubCategoryId: subcategoryId
-            })
-                .then(console.log('ok'))
+            axiosAuth.post(ENDPOINTS.addPost, request)
+                .then(() => {
+                    onAddPostSubmit();
+                })
                 .catch(error => {
                     console.log('Blad: ', error);
                 })
-
-        };
+        }
     }
 
     return (
@@ -62,8 +56,8 @@ const PostEditor = ({ onAddComment }) => {
                 fullWidth
                 margin="normal"
             />
-            <Button variant="contained" color="primary" onClick={handleAddComment} fullWidth>
-                Dodaj Post
+            <Button variant="contained" color="primary" onClick={handleAddPost} fullWidth>
+                Wyślij
             </Button>
         </Box>
     );
