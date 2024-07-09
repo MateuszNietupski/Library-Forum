@@ -7,6 +7,7 @@ import {ENDPOINTS} from "../utils/consts";
 import PostEditor from "../components/PostEditor";
 import Container from "@mui/material/Container";
 import Box from "@mui/material/Box";
+import BreadCrumbsComponent from "../components/BreadCrumbComponent";
 
 const PostList = () => {
     const [isLoading,setIsLoading] = useState(true);
@@ -36,6 +37,9 @@ const PostList = () => {
             <Typography variant="h3" m={5}>
                 Kategoria:
             </Typography>
+            <BreadCrumbsComponent 
+                breadcrumbs={[{url: "/forum",name: "Kategorie"}]}
+                primaryName={"Posts"}/>
             <Grid container spacing={3}>
                 {isLoading ? 
                     <Typography>Ładowanie...</Typography> : 

@@ -6,10 +6,11 @@ import axios from "axios";
 import {ENDPOINTS} from "../utils/consts";
 import CommentEditor from "../components/CommentEditor";
 import {DateFormat} from "../utils/DateFormat";
+import BreadCrumbsComponent from "../components/BreadCrumbComponent";
 
 const Post = () => {
     const [post,setPost] = useState()
-    const {postId} = useParams();
+    const {categoryId,subcategoryId,postId} = useParams();
     const [isLoading,setIsLoading] = useState(true);
     const [isAddCommentVisible,setIsAddCommentVisible] = useState(false);
     const toggleAddCommentVisible = () => {
@@ -31,8 +32,11 @@ const Post = () => {
     },[fetchData])
     
     return(
-            isLoading ? null : (
+            !isLoading && (
                 <Container>
+                    <BreadCrumbsComponent
+                    breadcrumbs={[{url: "/forum",name: "Kategorie"},{url: `/forum/${categoryId}/subcategory/${subcategoryId}`,name: "Posts"}]}    
+                    primaryName={"Post"}/>
                     <Paper elevation={3} display="flex" alignItems="center" justifyContent="space-between" sx={{p:6,m:4}}>
                         <Box marginTop="20px">
                             <Typography variant="h4">{post.title}</Typography>
