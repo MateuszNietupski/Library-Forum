@@ -1,25 +1,20 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { TextField, Button, Box } from '@mui/material';
 import axiosAuth from "../utils/authInstance";
 import {ENDPOINTS} from "../utils/consts";
-import {jwtDecode} from "jwt-decode";
 import {useParams} from "react-router-dom";
+import {AuthContext} from "../context/AuthProvider";
 
 const PostEditor = ({onAddPostSubmit}) => {
     const [title, setNewTitle] = useState('');
     const [content, setNewContent] = useState('');
-    const token = localStorage.getItem('access_token');
+    const { user } = useContext( AuthContext );
     const {subcategoryId} = useParams();
-    let userId;
-    if(token)
-    {
-        const decodeToken = jwtDecode(token);
-        userId = decodeToken.Id
-    }
     const request = {
-        Title: title,
-        Content: content,
-        SubCategoryId: subcategoryId
+        Title : title,
+        Content : content,
+        SubCategoryId : subcategoryId,
+        UserId : user.id
     }
     
     const handleAddPost = () => {

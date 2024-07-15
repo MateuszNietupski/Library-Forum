@@ -1,25 +1,20 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { TextField, Button, Box } from '@mui/material';
 import axiosAuth from "../utils/authInstance";
 import {ENDPOINTS} from "../utils/consts";
-import {jwtDecode} from "jwt-decode";
 import {useParams} from "react-router-dom";
+import {AuthContext} from "../context/AuthProvider";
 
 const CommentEditor = ({onCommentSubmit}) => {
     const [newComment, setNewComment] = useState('');
-    const token = localStorage.getItem('access_token');
+    const {user} = useContext(AuthContext);
     const {postId} = useParams();
-    let userId;
-    if(token)
-    {
-        const decodeToken = jwtDecode(token);
-        userId = decodeToken.Id
-    }
     const request = {
         Content: newComment,
-        UserId: userId,
+        UserId: user.id,
         PostId: postId
     }
+    
     const handleAddComment = () => {
         if (newComment.trim() !== '') {
             axiosAuth.post(ENDPOINTS.addComment, request)
@@ -31,6 +26,7 @@ const CommentEditor = ({onCommentSubmit}) => {
                 })
         }
     }
+    
     return (
         <Box>
             <TextField
@@ -49,5 +45,4 @@ const CommentEditor = ({onCommentSubmit}) => {
         </Box>
     );
 };
-
 export default CommentEditor;

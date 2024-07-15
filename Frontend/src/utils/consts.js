@@ -1,7 +1,7 @@
 export const baseUrl = "http://localhost:5004"
-export const frontUrl = "http://localhost:3000"
 
 export const ENDPOINTS = {
+    userInfo : `${baseUrl}/api/auth/UserInfo`,
     login : `${baseUrl}/api/auth/Login`,
     register : `${baseUrl}/api/auth/Register`,
     refreshToken : `${baseUrl}/api/auth/RefreshToken`,
@@ -17,14 +17,13 @@ export const ENDPOINTS = {
     addLoan: `${baseUrl}/api/loanAdd`,
     loanConfirm: `${baseUrl}/api/loanConfirm`,
     getLoans: `${baseUrl}/api/loanGet`,
-    
 }
 
 export const PATHS = {
     home: '/',
     login: '/login',
     register: '/register',
-    addNews: '/addNews',
+    unauthorized: '/unauthorized',
     forum: '/forum',
     category: '/forum/:categoryId',
     subcategory: '/forum/:categoryId/subcategory/:subcategoryId',
@@ -36,5 +35,11 @@ export const PATHS = {
 export const LOCAL_STORAGE = {
     accessToken: 'access_token',
     refreshToken: 'refresh_token',
-    role: 'role'
+    userInfo: 'userInfo'
 };
+
+export const ROLES = {
+    user : "User",
+    admin : "Admin",
+    worker : "Worker"
+}

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Projekt.Models.DTOs.Responses;
 
 namespace Projekt.Models
 {
@@ -6,9 +7,8 @@ namespace Projekt.Models
     {
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
-        public IdentityUser User { get; set; }
-        public IList<string> Roles { get; set; }
         public bool Result { get; set; }
+        public UserInfoResponseDTO? UserInfo { get; set; }
         public List<string>? Errors { get; set; }
     }
 }

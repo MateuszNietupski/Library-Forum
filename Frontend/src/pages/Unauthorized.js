@@ -1,20 +1,19 @@
-import { useNavigate } from "react-router-dom"
+import {Container,Typography,Box} from "@mui/material";
 
 const Unauthorized = () => {
-    const navigate = useNavigate();
-
-    const goBack = () => navigate(-1);
-
     return (
-        <section>
-            <h1>Unauthorized</h1>
-            <br />
-            <p>Nie masz dostępu do tej sekcji.</p>
-            <div className="flexGrow">
-                <button onClick={goBack}>Go Back</button>
-            </div>
-        </section>
+        <Container>
+            <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                textAlign="center"
+                sx={{mt:10}}>
+                <Typography variant="h1" gutterBottom>Unauthorized</Typography>
+                <Typography variant="h5" gutterBottom>Nie masz dostępu do tej sekcji.</Typography>
+            </Box>
+        </Container>
     )
 }
-
 export default Unauthorized

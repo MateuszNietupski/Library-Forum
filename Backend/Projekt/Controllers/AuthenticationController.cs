@@ -6,9 +6,10 @@ using Projekt.Models.DTOs;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Projekt.Data;
-using System.Linq;
+using Projekt.Models.DTOs.Responses;
 
 namespace Projekt.Controllers
 {
@@ -21,17 +22,20 @@ namespace Projekt.Controllers
             private readonly RoleManager<IdentityRole> _roleManager;
             private readonly TokenValidationParameters _tokenValidationParameters;
             private readonly AppDbContext _context;
+            private readonly IMapper _mapper;
             public AuthenticationController(UserManager<AppUser> userManager,
                 IConfiguration configuration,
                 AppDbContext context,
                 RoleManager<IdentityRole> roleManager,
-                TokenValidationParameters tokenValidationParameters)
+                TokenValidationParameters tokenValidationParameters,
+                IMapper mapper)
             {
                 _userManager = userManager;
                 _configuration = configuration;
                 _roleManager = roleManager;
                 _context = context;
                 _tokenValidationParameters = tokenValidationParameters;
+                _mapper = mapper;
             }
             [Route("Register")]
             [HttpPost]
@@ -57,8 +61,6 @@ namespace Projekt.Controllers
                         UserName = registerDto.Name
                     };
                     var is_created = await _userManager.CreateAsync(newUser, registerDto.Password);
-
-
                     if (is_created.Succeeded)
                     {
                         var userRole = await _roleManager.FindByNameAsync("User");
@@ -66,16 +68,12 @@ namespace Projekt.Controllers
                         {
                             await _roleManager.CreateAsync(new IdentityRole("User"));
                         }
-
                         await _userManager.AddToRoleAsync(newUser, "User");
-
                         return Ok(new AuthResult()
                         {
                             Result = true
                         });
-                        
                     }
-
                     return BadRequest(new AuthResult()
                     {
                         Errors = new List<string>()
@@ -87,7 +85,6 @@ namespace Projekt.Controllers
                 }
                 return BadRequest();
             }
-
             [HttpPost]
             [Route("RefreshToken")]
             public async Task<IActionResult> RefreshToken([FromBody] TokenRequest tokenRequest)
@@ -95,7 +92,6 @@ namespace Projekt.Controllers
                 if (ModelState.IsValid)
                 {
                     var result = VerifyAndGenerateToken(tokenRequest);
-
                     if (result == null)
                         return BadRequest(new AuthResult()
                         {
@@ -106,9 +102,7 @@ namespace Projekt.Controllers
                             Result = false
                         });
                     return Ok(result);
-
                 }
-
                 return BadRequest(new AuthResult()
                 {
                     Errors = new List<string>()
@@ -118,7 +112,6 @@ namespace Projekt.Controllers
                     Result = false
                 });
             }
-
             private async Task<AuthResult> VerifyAndGenerateToken(TokenRequest tokenRequest)
             {
                 var jwtTokenHandler = new JwtSecurityTokenHandler();
@@ -126,9 +119,7 @@ namespace Projekt.Controllers
                 try
                 {
                     _tokenValidationParameters.ValidateLifetime = false;
-
                     var tokenInVerification = jwtTokenHandler.ValidateToken(tokenRequest.AccessToken, _tokenValidationParameters, out var validatedToken);
-
                     if (validatedToken is JwtSecurityToken jwtSecurityToken)
                     {
                         var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase);
@@ -136,10 +127,8 @@ namespace Projekt.Controllers
                         if (result == false)
                             return null;
                     }
-
                     var utcExpiryDate = long.Parse(tokenInVerification.Claims
                         .FirstOrDefault(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-
                     var expiryDate = UnixTimeStampToDateTime(utcExpiryDate);
                     if (expiryDate < DateTime.Now)
                     {
@@ -152,7 +141,6 @@ namespace Projekt.Controllers
                             }
                         };
                     }
-
                     var storedToken =
                         await _context.RefreshTokens.FirstOrDefaultAsync(x => x.Token == tokenRequest.RefreshToken);
 
@@ -165,7 +153,6 @@ namespace Projekt.Controllers
                                 "Invalid token"
                             }
                         };
-
                     if (storedToken.IsUsed)
                         return new AuthResult()
                         {
@@ -175,7 +162,6 @@ namespace Projekt.Controllers
                                 "Token is used"
                             }
                         };
-                    
                     if (storedToken.IsRevoked)
                         return new AuthResult()
                         {
@@ -208,7 +194,6 @@ namespace Projekt.Controllers
                                 "Expired token"
                             }
                         };
-
                     storedToken.IsUsed = true;
                     _context.RefreshTokens.Update(storedToken);
                     await _context.SaveChangesAsync();
@@ -228,10 +213,7 @@ namespace Projekt.Controllers
                         }
                     };
                 }
-                
-                
             }
-
             private DateTime UnixTimeStampToDateTime(long unixTimeStamp)
             {
                 var dateTimeVal = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
@@ -241,7 +223,6 @@ namespace Projekt.Controllers
             }
             [Route("/addWorker")]
             [HttpPost]
-  
             public async Task<IActionResult> RegisterWorker([FromBody] RegisterDTO requestDto)
             {
                 if (ModelState.IsValid)
@@ -297,10 +278,7 @@ namespace Projekt.Controllers
             {
                 if (ModelState.IsValid)
                 {
-                    
                     var existing_user = await _userManager.FindByEmailAsync(loginRequest.Email);
-                    var user_role = await _userManager.GetRolesAsync(existing_user);
-                    IdentityRole role = new IdentityRole(user_role[0]);
                     if (existing_user == null)
                         return BadRequest(new AuthResult()
                         {
@@ -311,7 +289,6 @@ namespace Projekt.Controllers
                             Result = false
                         });
                     var isCorrect = await _userManager.CheckPasswordAsync(existing_user, loginRequest.Password);
-
                     if (!isCorrect)
                         return BadRequest(new AuthResult()
                         {
@@ -321,8 +298,11 @@ namespace Projekt.Controllers
                         },
                             Result = false
                         });
-                    // await _roleManager.FindByIdAsync(_roleManager.GetRoleIdAsync();
                     var jwtToken = await GenerateJwtToken(existing_user);
+                    var roles = await _userManager.GetRolesAsync(existing_user);
+                    var userInfo = _mapper.Map<UserInfoResponseDTO>(existing_user);
+                    userInfo.Roles = roles;
+                    jwtToken.UserInfo = userInfo;
                     return Ok(jwtToken);
                 }
                 return BadRequest(new AuthResult()
@@ -362,6 +342,7 @@ namespace Projekt.Controllers
                 };
                 var token = jwtTokenHandler.CreateToken(tokenDescriptor);
                 var jwtToken =  jwtTokenHandler.WriteToken(token);
+                
                 var refreshToken = new RefreshToken()
                 {
                     JwtId = token.Id,
@@ -371,11 +352,9 @@ namespace Projekt.Controllers
                     IsRevoked = false,
                     IsUsed = false,
                     UserId = user.Id
-
                 };
                 await _context.RefreshTokens.AddAsync(refreshToken);
                 await _context.SaveChangesAsync();
-                
                 return new AuthResult()
                 {
                     AccessToken = jwtToken,
@@ -383,7 +362,6 @@ namespace Projekt.Controllers
                     Result = true
                 };
             }
-
             private string RandomStringGeneration(int length)
             {
                 var random = new Random();
