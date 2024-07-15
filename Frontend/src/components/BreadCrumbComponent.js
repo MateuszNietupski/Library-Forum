@@ -5,7 +5,7 @@ const BreadCrumbsComponent = ({breadcrumbs,primaryName}) => {
         <Breadcrumbs sx={{m:4}} aria-label="breadcrumb">
             {breadcrumbs && breadcrumbs.length > 0 &&
             breadcrumbs.map((breadcrumb) => (
-                <Link underline="hover" color="inherit" href={breadcrumb.url}>
+                <Link key={breadcrumb.url} underline="hover" color="inherit" href={breadcrumb.url}>
                     {breadcrumb.name}
                 </Link>
             ))}

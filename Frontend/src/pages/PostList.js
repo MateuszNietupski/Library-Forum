@@ -1,12 +1,9 @@
-import Grid from "@mui/material/Grid";
 import React, {useCallback, useEffect, useState} from "react";
-import {CardContent,Typography,Button,Card,CardActions} from "@mui/material";
+import {CardContent,Typography,Button,Card,CardActions,Box,Container,Grid} from "@mui/material";
 import {Link, useParams} from "react-router-dom";
 import axios from "axios";
 import {ENDPOINTS} from "../utils/consts";
 import PostEditor from "../components/PostEditor";
-import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
 import BreadCrumbsComponent from "../components/BreadCrumbComponent";
 
 const PostList = () => {
@@ -63,19 +60,31 @@ const PostList = () => {
                                 </CardActions>
                             </Card>
                         </Grid>
-                        ))) : (
-                            <Typography>Brak postów</Typography>
-                )}
+                        ))
+                    ) :
+                        <Box sx={{display:'flex',justifyContent:'center',mt:5,width:'100%'}}>
+                            <Typography variant="h5">Brak postów</Typography>
+                        </Box>
+                        
+                }
             </Grid>
             <Box sx={{mb:10,mt:2,p:5}}>
-                {isAddPostVisible ? (
-                    <PostEditor onAddPostSubmit={() => {
-                        toggleAddPostVisible();
-                        fetchData();
-                    }}/>) : null}
-                <Button variant="outlined" fullWidth onClick={toggleAddPostVisible}>
-                    {isAddPostVisible ? 'Anuluj' : 'Dodaj Post'}
-                </Button>
+                {isAddPostVisible ? 
+                    (
+                        <>
+                            <PostEditor onAddPostSubmit={() => {
+                                toggleAddPostVisible();
+                                fetchData();
+                            }}/>
+                            <Button variant="outlined" fullWidth onClick={toggleAddPostVisible}>
+                                Anuluj
+                            </Button>
+                        </>
+                    ) : 
+                    <Button variant="contained" fullWidth onClick={toggleAddPostVisible}>
+                        Dodaj Post
+                    </Button>
+                }
             </Box>
         </Container>
     );

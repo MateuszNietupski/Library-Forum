@@ -58,7 +58,7 @@ public class ForumController : ControllerBase
             return BadRequest();
         }
         var newPost = _mapper.Map<Post>(addPostDto);
-        _context.ForumPosts.Add(newPost);
+        _context.Posts.Add(newPost);
         await _context.SaveChangesAsync();
         return Ok();
     }
@@ -92,7 +92,7 @@ public class ForumController : ControllerBase
     {
         Guid guid;
         Guid.TryParse(subcategoryId,out guid);
-        var posts = _context.ForumPosts
+        var posts = _context.Posts
             .Where(post => post.SubCategoryId == guid)
             .ToList();
         return Ok(posts);
@@ -103,8 +103,10 @@ public class ForumController : ControllerBase
     {
         Guid guid;
         Guid.TryParse(postId, out guid);
-        var post = _context.ForumPosts
-            .Include(post => post.Comments)
+        var post = _context.Posts
+            .Include(u => u.AppUser)
+            .Include(post => post.Comments
+                .OrderByDescending(c => c.DateAdded))
             .ThenInclude(c => c.AppUser)
             .FirstOrDefault(fp => fp.Id.Equals(guid));
         var response = _mapper.Map<PostResponseDTO>(post);

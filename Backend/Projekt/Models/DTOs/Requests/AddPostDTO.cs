@@ -5,4 +5,5 @@ public class AddPostDTO
     public string Title { get; set; }
     public string Content { get; set; }
     public Guid SubCategoryId { get; set; }
+    public string UserId { get; set; }
 }

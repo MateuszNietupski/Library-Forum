@@ -11,9 +11,6 @@ export const ThemeProvider = ({ children }) => {
     const toggleDarkMode = () => {
         setIsDarkMode(!isDarkMode);
     }
-    const handleColorChange = (color) => {
-        setPrimaryColor(color.hex);
-    }
     const theme = createTheme({
         palette: {
             mode: isDarkMode ? 'dark' : 'light',
@@ -28,7 +25,6 @@ export const ThemeProvider = ({ children }) => {
 
                 {children}
             </MuiThemeProvider>
-            <ChromePicker color={primaryColor} onChangeComplete={handleColorChange}/>
         </ThemeContext.Provider>
     );
 };

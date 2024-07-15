@@ -2,6 +2,7 @@ import React from "react";
 import "./SwitchTheme.css";
 import {useTheme} from "../../context/ThemeProvider";
 
+
 const Switch = () => {
     const { isDarkMode, toggleDarkMode } = useTheme();
 

@@ -15,25 +15,21 @@ import ItemCart from "./ItemCart";
 const ItemCartHome = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const {cartItems} = useItemCart();
-
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
     };
-
     const handleClose = () => {
         setAnchorEl(null);
     };
-
     return (
         <div>
             <AppBar position="static">
                 <Toolbar>
                     <IconButton color="inherit" onClick={handleClick}>
-                        <Badge badgeContent={cartItems.length} color="error">
+                        <Badge badgeContent={cartItems.length ? cartItems.length : 0} color="error">
                             <ShoppingCartIcon/>
                         </Badge>
                     </IconButton>
-
                     <Menu
                         id="simple-menu"
                         anchorEl={anchorEl}
@@ -53,5 +49,4 @@ const ItemCartHome = () => {
         </div>
     );
 };
-
 export default ItemCartHome;

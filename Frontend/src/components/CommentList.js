@@ -6,7 +6,6 @@ import {ExpandLess, ExpandMore} from "@mui/icons-material";
 
 const CommentList = ({ comments }) => {
     const [open, setOpen] = useState(false);
-
     const handleToggle = () => {
         setOpen(!open);
     };
@@ -21,7 +20,7 @@ const CommentList = ({ comments }) => {
                         </ListItem>
                     </List>
                     <Collapse in={open} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
+                        <List component="div" disablePadding sx={{mb:10}}>
                             {comments.map((comment) => (
                                 <ListItem key={comment.id}>
                                     <Paper elevation={3} style={{ padding: '10px', width: '100%' }}>

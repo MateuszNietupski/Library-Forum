@@ -13,7 +13,9 @@ public class ForumMapperProfile : Profile
             .ForMember(dest => dest.Comments,
                 opt => opt.MapFrom(src => src.Comments))
             .ForMember(dest => dest.Data,
-            opt => opt.MapFrom(src => src.DateAdded));
+                opt => opt.MapFrom(src => src.DateAdded))
+            .ForMember(dest => dest.UserName,
+                opt => opt.MapFrom(src => src.AppUser.UserName));
         CreateMap<Comment, CommentResponseDTO>()
             .ForMember(dest => dest.UserName,
                 opt => opt.MapFrom(src => src.AppUser.UserName))

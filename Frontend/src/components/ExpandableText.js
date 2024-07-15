@@ -8,7 +8,7 @@ const ExpandableText = ({text, maxLength}) => {
   }
   const displayText = !isExpanded ? text : `${text.substring(0,maxLength)}...` 
   return (
-    <div >
+    <div>
         <Typography variant="body1" textAlign="center">{displayText}</Typography>
         {text.length > maxLength && (
                 <Button onClick={toggleExpansion} alignItems="center">
