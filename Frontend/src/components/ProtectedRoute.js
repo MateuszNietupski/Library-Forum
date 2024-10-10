@@ -6,7 +6,7 @@ import { AuthContext } from "../context/AuthProvider";
 const ProtectedRoute = ({allowedRoles}) => {
     const {user} = useContext(AuthContext);
     return (
-        user.roles.find(role => allowedRoles?.includes(role))
+        user?.roles?.find(role => allowedRoles?.includes(role))
             ? <Outlet />
             : user
                 ? <Navigate to={PATHS.unauthorized} />

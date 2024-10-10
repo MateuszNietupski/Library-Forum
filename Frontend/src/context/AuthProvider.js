@@ -13,10 +13,10 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(() => {
         const userInfo = localStorage.getItem(LOCAL_STORAGE.userInfo);
         try {
-            return userInfo ? JSON.parse(userInfo) : {};
+            return userInfo ? JSON.parse(userInfo) : null;
         } catch (e) {
             console.error("Error parsing user info from localStorage:", e);
-            return {};
+            return null;
         }
     });
     const login = useCallback((userInfo) => {

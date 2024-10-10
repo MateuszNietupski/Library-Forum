@@ -3,7 +3,6 @@ import { Grid, Paper,Button } from "@mui/material";
 import { Draggable, Droppable, DragDropContext } from 'react-beautiful-dnd';
 import PropTypes from 'prop-types';
 import {baseUrl, ENDPOINTS} from "../utils/consts";
-import axios from "axios";
 import axiosAuth from "../utils/authInstance";
 
 const DraggableGallery = ({images}) => {
@@ -33,42 +32,43 @@ const DraggableGallery = ({images}) => {
     };
     
     return (
-        <div>
-            <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId="gallery">
-                    {(provided) => (
-                        <Grid container direction="column" spacing={2}  ref={provided.innerRef} {...provided.droppableProps}>
-                            {galleryOrder.map((image, index) => (
-                                <Draggable key={image.id} draggableId={image.id} index={index}>
-                                    {(provided) => (
-                                        <Grid item  ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                                            <Paper elevation={2}  style={{width: '350px',textAlign: 'center'}}>
-                                                <img
-                                                    src={baseUrl + image.filePath}
-                                                    alt="obraz"
-                                                    style={{ width: '300px', height: '400px', objectFit: 'cover' }}
-                                                />
-                                            </Paper>
-                                        </Grid>
-                                    )}
-                                </Draggable>
-                            ))}
-                            {provided.placeholder}
-                        </Grid>
-                    )}
-                </Droppable>
-            </DragDropContext>
-            <Button onClick={handleSaveButtonClick}>
-                Zapisz
-            </Button>
-        </div>
-        
+        images.count > 0 
+            ?
+            <>
+                <DragDropContext onDragEnd={handleDragEnd}>
+                    <Droppable droppableId="gallery">
+                        {(provided) => (
+                            <Grid container direction="column" spacing={2}  ref={provided.innerRef} {...provided.droppableProps}>
+                                {galleryOrder.map((image, index) => (
+                                    <Draggable key={image.id} draggableId={image.id} index={index}>
+                                        {(provided) => (
+                                            <Grid item  ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                                                <Paper elevation={2}  style={{width: '350px',textAlign: 'center'}}>
+                                                    <img
+                                                        src={baseUrl + image.filePath}
+                                                        alt="obraz"
+                                                        style={{ width: '300px', height: '400px', objectFit: 'cover' }}
+                                                    />
+                                                </Paper>
+                                            </Grid>
+                                        )}
+                                    </Draggable>
+                                ))}
+                                {provided.placeholder}
+                            </Grid>
+                        )}
+                    </Droppable>
+                </DragDropContext>
+                <Button onClick={handleSaveButtonClick}>
+                    Zapisz
+                </Button>
+            </>
+            :
+            null
     );
-
 };
 
 DraggableGallery.propTypes = {
     images: PropTypes.array.isRequired,
   };
-
 export default DraggableGallery;

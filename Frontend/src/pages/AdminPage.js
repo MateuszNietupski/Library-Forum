@@ -4,6 +4,7 @@ import axios from "axios";
 import {ENDPOINTS} from "../utils/consts";
 import axiosAuth from "../utils/authInstance";
 import ConfirmLoans from "../components/ConfirmLoans";
+import {Container} from "@mui/material";
 
 
 
@@ -26,10 +27,10 @@ const AdminPage = () => {
     }, []);
     
     return (
-        <>
+        <Container sx={{m:'auto'}}>
             {isLoading ? null : <DraggableGallery images={images} />}
             <ConfirmLoans/>
-        </>
+        </Container>
     );
 
 }
