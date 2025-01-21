@@ -26,11 +26,13 @@ public class GenericRepository<TEntity>(AppDbContext context) : IGenericReposito
     public virtual void Delete(TEntity entity)
     {
         context.Set<TEntity>().Remove(entity);
+        context.SaveChanges();
     }
 
     public virtual void Update(TEntity entity)
     {
         context.Set<TEntity>().Update(entity);
+        context.SaveChanges();
     }
 
     public async Task SaveChangesAsync() => await context.SaveChangesAsync();

@@ -1,12 +1,6 @@
-using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Projekt.API.Controllers;
-using Projekt.DataService.Data;
-using Projekt.Entities.Models;
 using Projekt.Entities.Models.DTOs.Requests;
-using Projekt.Entities.Models.DTOs.Responses;
 using Projekt.Services.Interfaces;
 
 namespace Projekt.Controllers;

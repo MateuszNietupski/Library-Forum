@@ -16,7 +16,8 @@ namespace Projekt.DataService.Data
         public DbSet<Book> Books { get; set; }
         public DbSet<GalleryDisplaySequence> GalleryDisplaySequence { get; set; }
         public DbSet<Loan> Loans { get; set; }
-        public DbSet<LoanBook> LoanBooks { get; set; }
+        public DbSet<BookInstance> BookInstances { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehaviour", true);
@@ -48,8 +49,6 @@ namespace Projekt.DataService.Data
                 .HasOne(u => u.AppUser)
                 .WithMany(c => c.Comments)
                 .HasForeignKey(k => k.UserId);
-            builder.Entity<LoanBook>()
-                .HasKey(lb => new { lb.BookId, lb.LoanId });
             builder.Entity<Image>()
                 .HasOne(i => i.Comment)
                 .WithMany(c => c.Images)

@@ -1,4 +1,4 @@
-namespace Projekt.Models;
+namespace Projekt.Entities.Models;
 
 public class Image : BaseEntity
 {
