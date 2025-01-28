@@ -8,5 +8,5 @@ public interface IBookRepository : IGenericRepository<Book>
     void UpdateBookInstance(BookInstance bookInstance);
     void DeleteBookInstance(BookInstance bookInstance);
     Task<BookInstance?> GetBookInstanceByIdAsync(Guid id);
-    Task<Book?> GetAllBookInstances(Guid id);
+    Task<List<BookInstance>?> GetAllBookInstances();
 }

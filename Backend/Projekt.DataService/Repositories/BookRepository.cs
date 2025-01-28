@@ -15,11 +15,10 @@ public class BookRepository(AppDbContext context) : GenericRepository<Book>(cont
             .FirstOrDefaultAsync(b => b.Id == id);
     }
 
-    public async Task<Book?> GetAllBookInstances(Guid id)
+    public async Task<List<BookInstance>?> GetAllBookInstances()
     {
-        return await context.Books
-            .Include(i => i.BookInstances.OrderByDescending(i => i.DateAdded))
-            .FirstOrDefaultAsync(b => b.Id == id);
+        return await context.BookInstances
+            .ToListAsync();
     }
 
     public async Task AddBookInstance(BookInstance bookInstance)

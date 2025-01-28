@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Projekt.Controllers;
 using Projekt.Entities.Models;
@@ -9,6 +10,7 @@ namespace Projekt.API.Controllers;
 public class BooksController(IBookService bookService) : BaseContorller
 {
     [HttpPost("books")]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> AddBook([FromForm] BookDto bookDto )
     {
         if (!ModelState.IsValid)
@@ -38,6 +40,7 @@ public class BooksController(IBookService bookService) : BaseContorller
         return Ok(books);
     }
     [HttpPut("books/{id:guid}")]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> UpdateBook(Guid id, [FromBody] BookDto bookDto)
     {
         try
@@ -51,6 +54,7 @@ public class BooksController(IBookService bookService) : BaseContorller
         }
     }
     [HttpDelete("books/{id:guid}")]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> DeleteBook(Guid id)
     {
         try
@@ -65,6 +69,7 @@ public class BooksController(IBookService bookService) : BaseContorller
     }
     
     [HttpPost("books/{id:guid}/bookInstances")]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> AddBookInstance([FromForm] AddBookInstanceDto bookInstanceDto, Guid id)
     {
         if (!ModelState.IsValid)
@@ -77,16 +82,17 @@ public class BooksController(IBookService bookService) : BaseContorller
         );
     }
     
-    [HttpGet("books/{id:guid}/bookInstances")]
-    public async Task<IActionResult> GetBookInstances(Guid id)
+    [HttpGet("books/bookInstances")]
+    public async Task<IActionResult> GetBookInstances()
     {
-        var books = await bookService.GetAllBookInstencesByIdAsync(id);
+        var books = await bookService.GetAllBookInstencesByIdAsync();
         if (books == null)
             return NotFound();
         return Ok(books);
     }
     
     [HttpPut("books/bookInstances/{id:guid}")]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> UpdateBookInstance(Guid id, [FromBody] BookInstance bookInstance)
     {
         try
@@ -100,6 +106,7 @@ public class BooksController(IBookService bookService) : BaseContorller
         }
     }
     [HttpDelete("books/booksInstances/{id:guid}")]
+    [Authorize(Roles = "User")]
     public async Task<IActionResult> DeleteBookInstance(Guid id)
     {
         try
