@@ -10,7 +10,7 @@ export const ENDPOINTS = {
     getForumCategories: `${baseUrl}/api/getCategories`,
     getPost: `${baseUrl}/api/getPost`,
     getForumPosts: `${baseUrl}/api/getPosts`,
-    getBooks: `${baseUrl}/api/getBooks`,
+    getBooks: `${baseUrl}/api/Books/books`,
     confirmationMail: `${baseUrl}/api/confirmationMail`,
     addComment: `${baseUrl}/api/addComment`,
     addPost: `${baseUrl}/api/addPost`,

@@ -11,7 +11,7 @@ import ItemCartHome from "./ItemCartHome";
 
 const Header = () => {
     const {isLoggedIn, logout} = useContext(AuthContext);
-    
+    //<Navbar.Brand as={Link} to={PATHS.forum}>Forum</Navbar.Brand>
     
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
@@ -23,19 +23,17 @@ const Header = () => {
                         <SwitchTheme/>
                         <MoonIcon/>
                         <Navbar.Brand as={Link} to={PATHS.home}>Home</Navbar.Brand>
-                        <Navbar.Brand as={Link} to={PATHS.forum}>Forum</Navbar.Brand>
                         <Navbar.Brand as={Link} to={PATHS.adminPanel}>AdminPanel</Navbar.Brand>
                         <Navbar.Brand as={Link} to={PATHS.books}>Books</Navbar.Brand>
-                        <Nav className="me-auto">
-                            {isLoggedIn && (
-                                <>
-                                    <Nav.Link onClick={logout}>Logout</Nav.Link>
-                                </>
-                            )}
-                        </Nav>
                     </Navbar.Collapse>
                 <ItemCartHome/>
-                
+                <Nav className="me-auto">
+                    {isLoggedIn && (
+                        <>
+                            <Nav.Link onClick={logout}>Logout</Nav.Link>
+                        </>
+                    )}
+                </Nav>
             </Container>
         </Navbar>
     );

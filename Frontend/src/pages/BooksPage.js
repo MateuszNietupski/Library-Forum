@@ -1,15 +1,12 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {ENDPOINTS} from "../utils/consts";
 import axios from "axios";
-import Container from "@mui/material/Container";
-import {Paper} from "@mui/material";
-import Grid from "@mui/material/Grid";
-import {useItemCart} from "../context/ItemCartProvider";
-import Button from "@mui/material/Button";
+import {Container,Grid} from "@mui/material";
+import BreadCrumbsComponent from "../components/BreadCrumbComponent";
+import {BookCard} from "../components/BookCard";
 
 const BooksPage = () => {
     const [books,setBooks] = useState([]);
-    const { addItemToCart } = useItemCart();
     
     useEffect(() => {
         axios.get(ENDPOINTS.getBooks)
@@ -22,23 +19,16 @@ const BooksPage = () => {
     }, []);
     
     return(
-      
-        <div>
-            <Container>
-                {books.map((book) => (
-                    <Grid item xs={4} key={book.id}>
-                        <Paper>
-                            {'Nazwa: ' + book.name}
-                            {' Autor: ' + book.author}
-                            <Button onClick={() => addItemToCart(book)}>
-                                Wypożycz
-                            </Button>
-                        </Paper>
+        <Container sx={{mt:2}}>
+            <BreadCrumbsComponent primaryName={"Katalog"}/>
+            <Grid container spacing={3}>
+                {books ? books.map((book) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={book.id}>
+                        <BookCard book={book}/>
                     </Grid>
-                ))}
-            </Container>
-            
-        </div>
+                )) : (<p>Brak zdjec</p>)}
+            </Grid>
+        </Container>
     );
     
 }
