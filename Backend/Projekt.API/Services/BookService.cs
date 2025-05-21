@@ -18,9 +18,9 @@ public class BookService(
         return await bookRepository.GetAll();
     }
 
-    public Task<Book?> GetAllBookInstencesByIdAsync(Guid id)
+    public Task<List<BookInstance>?> GetAllBookInstencesByIdAsync()
     {
-        return bookRepository.GetAllBookInstances(id);
+        return bookRepository.GetAllBookInstances();
     }
 
     public async Task<Book?> GetBookByIdAsync(Guid id)
@@ -123,7 +123,7 @@ public class BookService(
     public async Task<Loan> UpdateLoanAsync(Guid id)
     { 
         var loan = await loansRepository.GetLoanByIdAsync(id);
-        loan!.ReturnDate = DateTime.Now;
+        loan!.ReturnDate = DateTime.UtcNow;
         foreach (var bookInstance in loan.Books)
         {
             bookInstance.IsAvailable = true;

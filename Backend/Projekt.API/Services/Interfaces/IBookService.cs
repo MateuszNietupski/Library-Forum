@@ -6,7 +6,7 @@ namespace Projekt.Services.Interfaces;
 public interface IBookService
 {
     Task<List<Book>?> GetAllBooksAsync();
-    Task<Book?> GetAllBookInstencesByIdAsync(Guid id);
+    Task<List<BookInstance>?> GetAllBookInstencesByIdAsync();
     Task<Book?> GetBookByIdAsync(Guid id);
     Task<Book> AddBookAsync(BookDto bookDto);
     Task DeleteBookAsync(Guid id);
