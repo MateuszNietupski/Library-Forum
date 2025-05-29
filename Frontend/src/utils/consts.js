@@ -10,7 +10,8 @@ export const ENDPOINTS = {
     getForumCategories: `${baseUrl}/api/getCategories`,
     getPost: `${baseUrl}/api/getPost`,
     getForumPosts: `${baseUrl}/api/getPosts`,
-    getBooks: `${baseUrl}/api/Books/books`,
+    getBooks: `${baseUrl}/api/Books`,
+    getBook: `${baseUrl}/api/Book:id`,
     confirmationMail: `${baseUrl}/api/confirmationMail`,
     addComment: `${baseUrl}/api/addComment`,
     addPost: `${baseUrl}/api/addPost`,
@@ -29,7 +30,8 @@ export const PATHS = {
     subcategory: '/forum/:categoryId/subcategory/:subcategoryId',
     post: '/forum/:categoryId/subcategory/:subcategoryId/post/:postId',
     adminPanel: '/adminPanel',
-    books: '/books'
+    books: '/books',
+    book: `/books/:id`,
 }
 
 export const LOCAL_STORAGE = {

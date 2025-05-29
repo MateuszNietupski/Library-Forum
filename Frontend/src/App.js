@@ -13,6 +13,7 @@ import BooksPage from "./pages/BooksPage";
 import AdminPage from "./pages/AdminPage";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
+import BookDetailsPage from "./pages/BookDetailsPage";
 
 function App() {
   return (
@@ -22,13 +23,15 @@ function App() {
           <Route path={PATHS.unauthorized} element={<Unauthorized/>}/>
           <Route path={PATHS.login} element={<LoginPage/>} />
           <Route path={PATHS.register} element={<Register/>} />
+
+          <Route path={PATHS.books} element={<BooksPage/>}/>
+          <Route path={PATHS.book} element={<BookDetailsPage/>}/>
           
           <Route element={<ProtectedRoute allowedRoles={[ROLES.user,ROLES.admin,ROLES.worker]}/>}>
             <Route path={PATHS.home} element={<Home />} />
             <Route path={PATHS.forum} element={<Forum />} />
             <Route path={PATHS.subcategory} element={<PostList/>}/>
             <Route path={PATHS.post} element={<Post/>}/>
-            <Route path={PATHS.books} element={<BooksPage/>}/>
           </Route>
           
           <Route element={<ProtectedRoute allowedRoles={[ROLES.admin]}/>}>
