@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Projekt.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/[controller]/")]
 [ApiController]
-public class BaseContorller : ControllerBase
+public abstract class BaseController : ControllerBase
 {
     
 }

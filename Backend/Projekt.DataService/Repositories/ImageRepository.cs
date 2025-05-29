@@ -5,7 +5,7 @@ using Projekt.Entities.Models;
 
 namespace Projekt.DataService.Repositories;
 
-public class ImageRepository(AppDbContext context) : GenericRepository<Image>(context),IImageRepository
+public class ImageRepository(AppDbContext context) : IImageRepository
 {
     public async Task<List<Image>> GetGallery()
     {
@@ -22,5 +22,31 @@ public class ImageRepository(AppDbContext context) : GenericRepository<Image>(co
     public async Task<GalleryDisplaySequence?> GetGalleryDisplaySequence(Guid imageId)
     {
         return await context.GalleryDisplaySequence.FirstOrDefaultAsync(i => i.Id == imageId);
+    }
+
+    public async Task<List<T>> GetImagesByOwner<T>(Guid ownerId) where T : Image
+    {
+        return await context.Images
+            .OfType<T>()
+            .Where(i => EF.Property<Guid>(i, "ImageType") == ownerId)
+            .ToListAsync();
+    }
+
+    public async Task AddImage<T>(T image) where T : Image
+    {
+        await context.Set<T>().AddAsync(image);
+        await context.SaveChangesAsync();
+    }
+
+    public void DeleteImage<T>(T image) where T : Image
+    {
+        context.Set<T>().Remove(image);
+        context.SaveChangesAsync();
+    }
+
+    public async Task<T?> GetImageById<T>(Guid id) where T : Image
+    {
+        return await context.Images
+            .OfType<T>().FirstOrDefaultAsync(i => i.Id == id);
     }
 }

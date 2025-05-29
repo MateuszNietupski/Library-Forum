@@ -21,6 +21,6 @@ public interface IBookService
     Task<Loan?> GetLoanByIdAsync(Guid id);
     Task<List<Loan>> GetAllUserLoansAsync(string userId);
     Task<Loan> AddLoanAsync(LoanDTO loanDto);
-    Task<Loan> UpdateLoanAsync(Guid id);
+    Task<Loan> EndLoanAsync(Guid id);
     
 }

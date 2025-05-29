@@ -7,11 +7,22 @@ namespace Projekt.DataService.Repositories;
 
 public class BookRepository(AppDbContext context) : GenericRepository<Book>(context), IBookRepository
 {
+    public override async Task<List<Book>> GetAll()
+    {
+        return await context.Books
+            .Include(review => review.Reviews.OrderByDescending(r => r.DateAdded))
+            .ThenInclude(u => u.AppUser)
+            .Include(book => book.Images.Where(i => i is BookImage))
+            .Include(bi => bi.BookInstances)
+            .ToListAsync();
+    }
     public override async Task<Book?> GetById(Guid id)
     {
         return await context.Books
             .Include(review => review.Reviews.OrderByDescending(r => r.DateAdded))
             .ThenInclude(u => u.AppUser)
+            .Include(book => book.Images.Where(i => i is BookImage))
+            .Include(bi => bi.BookInstances)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
 

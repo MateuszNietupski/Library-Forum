@@ -11,15 +11,15 @@ namespace Projekt.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ImageController(AppDbContext context, IGalleryService galleryService) : ControllerBase
+public class ImageController(AppDbContext context, IImageService imageService) : ControllerBase
 {
-    [HttpPost("images")]
-    public async Task<IActionResult> AddImage([FromForm] ImageDTO imageDto)
+    [HttpPost("")]
+    public async Task<IActionResult> AddImage([FromForm] ImageDto imageDto)
     {
         if (!ModelState.IsValid)
             return BadRequest("Nieprawidłowy plik obrazu.");
         
-        var newImage = await galleryService.AddImage(imageDto);
+        var newImage = await imageService.AddImage<GalleryImage>(imageDto);
         return CreatedAtAction(
             nameof(GetImageById),
             new { id = newImage.Id },
@@ -27,35 +27,33 @@ public class ImageController(AppDbContext context, IGalleryService galleryServic
         );
     }
 
-    [HttpGet("images/{id:guid}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetImageById(Guid id)
     {
         if(id == Guid.Empty)
             return BadRequest("Invalid image ID.");
-        var response = await galleryService.GetImageById(id);
+        var response = await imageService.GetImageById<GalleryImage>(id);
         if (response == null)
             return NotFound();
         return Ok(response);
     }
     
-    [HttpGet("images")]
-    [Authorize(Roles = "User,Admin")]
+    [HttpGet("")]
+   // [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> GetGallery()
     {
-        var response = await galleryService.GetGallery();
+        var response = await imageService.GetGallery();
         if (response == null)
             return NotFound();
         return Ok(response);
     }
-
-    [Route("/api/updateGallerySequence")]
-    [HttpPatch]
+    [HttpPatch("updateGallerySequence")]
     [Authorize(Roles = "User,Admin")]
     public IActionResult PatchGallerySequence([FromBody] List<UpdateGallerySequenceDTO> gallery)
     {
         if (gallery.Count == 0)
             return BadRequest("No gallery sequence provided.");
-        galleryService.UpdateGallerySequenceAsync(gallery);
+        imageService.UpdateGallerySequenceAsync(gallery);
         return Ok();    
     }
 }

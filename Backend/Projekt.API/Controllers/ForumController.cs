@@ -5,7 +5,7 @@ using Projekt.Services.Interfaces;
 
 namespace Projekt.Controllers;
 
-public class ForumController(IForumService forumService) : BaseContorller
+public class ForumController(IForumService forumService) : BaseController
 {
     [HttpPost("categories")]
     [Authorize(Roles = "Admin,User")]

@@ -13,7 +13,7 @@ namespace Projekt.API.Controllers;
 public class LoansController(IBookService bookService) : ControllerBase
 {
     [HttpPost("loans")]
-    [Authorize(Roles = "User")]
+   // [Authorize(Roles = "User")]
     public async Task<IActionResult> AddLoan([FromBody] LoanDTO loanDto)
     {
         if (!ModelState.IsValid)
@@ -43,7 +43,7 @@ public class LoansController(IBookService bookService) : ControllerBase
         return Ok(response);
     }
     [HttpGet("loans/users/{id}")]
-    [Authorize(Roles = "User")]
+  //  [Authorize(Roles = "User")]
     public async Task<IActionResult> GetLoan(string id)
     {
         var response = await bookService.GetAllUserLoansAsync(id);
@@ -53,13 +53,13 @@ public class LoansController(IBookService bookService) : ControllerBase
     }
 
     [HttpPut("loans/{id:guid}")]
-    [Authorize(Roles = "User")]
+  //  [Authorize(Roles = "User")]
     public async Task<IActionResult> UpdateLoan(Guid id)
     {
         var loan = await bookService.GetLoanByIdAsync(id);
         if (loan == null)
             return NotFound();
-        await bookService.UpdateLoanAsync(id);
+        await bookService.EndLoanAsync(id);
         return Ok("Loan updated");
     }
 }

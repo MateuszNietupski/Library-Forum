@@ -13,6 +13,8 @@ namespace Projekt.DataService.Data
         public DbSet<Post> Posts { get; set; }
         public DbSet<Comment> ForumComments { get; set; }
         public DbSet<Image> Images { get; set; }
+        public DbSet<BookImage> BookImages { get; set; }
+        public DbSet<GalleryImage> GalleryImages { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<GalleryDisplaySequence> GalleryDisplaySequence { get; set; }
         public DbSet<Loan> Loans { get; set; }
@@ -27,7 +29,6 @@ namespace Projekt.DataService.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
             builder.Entity<Subcategory>()
                 .HasOne(c => c.Category)
                 .WithMany(s => s.Subcategories)
@@ -50,16 +51,14 @@ namespace Projekt.DataService.Data
                 .WithMany(c => c.Comments)
                 .HasForeignKey(k => k.UserId);
             builder.Entity<Image>()
-                .HasOne(i => i.Comment)
-                .WithMany(c => c.Images)
-                .HasForeignKey(i => i.CommentId)
-                .OnDelete(DeleteBehavior.Cascade);
-            builder.Entity<Image>()
-                .HasOne(i => i.Post)
-                .WithMany(c => c.Images)
-                .HasForeignKey(i => i.PostId)
+                .HasDiscriminator<string>("ImageType")
+                .HasValue<BookImage>("BookImage")
+                .HasValue<GalleryImage>("GalleryImage");
+            builder.Entity<BookImage>()
+                .HasOne(b => b.Book)
+                .WithMany(i => i.Images)
+                .HasForeignKey(b => b.BookId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
-        
     }
 }

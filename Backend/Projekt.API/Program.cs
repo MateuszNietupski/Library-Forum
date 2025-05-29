@@ -92,7 +92,7 @@ builder.Services.AddScoped<IForumPostRepository, ForumPostRepository>();
 builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
-builder.Services.AddScoped<IGalleryService, GalleryService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IReviewRepository, RewiewRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();

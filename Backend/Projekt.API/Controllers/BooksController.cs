@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Projekt.Controllers;
 using Projekt.Entities.Models;
@@ -7,10 +6,10 @@ using Projekt.Services.Interfaces;
 
 namespace Projekt.API.Controllers;
 
-public class BooksController(IBookService bookService) : BaseContorller
+public class BooksController(IBookService bookService) : BaseController
 {
-    [HttpPost("books")]
-    [Authorize(Roles = "User")]
+    [HttpPost("")]
+//    [Authorize(Roles = "User")]
     public async Task<IActionResult> AddBook([FromForm] BookDto bookDto )
     {
         if (!ModelState.IsValid)
@@ -23,7 +22,7 @@ public class BooksController(IBookService bookService) : BaseContorller
         );
     }
 
-    [HttpGet("books/{id:guid}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetBookById(Guid id)
     {
         var book = await bookService.GetBookByIdAsync(id);
@@ -31,7 +30,7 @@ public class BooksController(IBookService bookService) : BaseContorller
             return NotFound();
         return Ok(book);
     }
-    [HttpGet("books")]
+    [HttpGet("")]
     public async Task<IActionResult> GetBook()
     {
         var books = await bookService.GetAllBooksAsync();
@@ -39,8 +38,8 @@ public class BooksController(IBookService bookService) : BaseContorller
             return NotFound();
         return Ok(books);
     }
-    [HttpPut("books/{id:guid}")]
-    [Authorize(Roles = "User")]
+    [HttpPut("{id:guid}")]
+ //   [Authorize(Roles = "User")]
     public async Task<IActionResult> UpdateBook(Guid id, [FromBody] BookDto bookDto)
     {
         try
@@ -53,8 +52,8 @@ public class BooksController(IBookService bookService) : BaseContorller
             return BadRequest(new { message = ex.Message });
         }
     }
-    [HttpDelete("books/{id:guid}")]
-    [Authorize(Roles = "User")]
+    [HttpDelete("{id:guid}")]
+//    [Authorize(Roles = "User")]
     public async Task<IActionResult> DeleteBook(Guid id)
     {
         try
@@ -68,8 +67,8 @@ public class BooksController(IBookService bookService) : BaseContorller
         }
     }
     
-    [HttpPost("books/{id:guid}/bookInstances")]
-    [Authorize(Roles = "User")]
+    [HttpPost("{id:guid}/bookInstances")]
+ //   [Authorize(Roles = "User")]
     public async Task<IActionResult> AddBookInstance([FromForm] AddBookInstanceDto bookInstanceDto, Guid id)
     {
         if (!ModelState.IsValid)
@@ -82,7 +81,7 @@ public class BooksController(IBookService bookService) : BaseContorller
         );
     }
     
-    [HttpGet("books/bookInstances")]
+    [HttpGet("/bookInstances")]
     public async Task<IActionResult> GetBookInstances()
     {
         var books = await bookService.GetAllBookInstencesByIdAsync();
@@ -91,8 +90,8 @@ public class BooksController(IBookService bookService) : BaseContorller
         return Ok(books);
     }
     
-    [HttpPut("books/bookInstances/{id:guid}")]
-    [Authorize(Roles = "User")]
+    [HttpPut("/bookInstances/{id:guid}")]
+  //  [Authorize(Roles = "User")]
     public async Task<IActionResult> UpdateBookInstance(Guid id, [FromBody] BookInstance bookInstance)
     {
         try
@@ -105,8 +104,8 @@ public class BooksController(IBookService bookService) : BaseContorller
             return BadRequest(new { message = ex.Message });
         }
     }
-    [HttpDelete("books/booksInstances/{id:guid}")]
-    [Authorize(Roles = "User")]
+    [HttpDelete("/booksInstances/{id:guid}")]
+   // [Authorize(Roles = "User")]
     public async Task<IActionResult> DeleteBookInstance(Guid id)
     {
         try

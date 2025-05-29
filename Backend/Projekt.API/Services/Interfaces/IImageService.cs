@@ -4,10 +4,11 @@ using Projekt.Entities.Models.DTOs.Requests;
 
 namespace Projekt.Services;
 
-public interface IGalleryService
+public interface IImageService
 {
     Task<List<Image>?> GetGallery();
     Task UpdateGallerySequenceAsync(List<UpdateGallerySequenceDTO> gallery);
-    Task<Image> AddImage(ImageDTO image);
-    Task<Image?> GetImageById(Guid imageId);
+    Task<T> AddImage<T>(ImageDto image) where T : Image, new();
+    Task<T?> GetImageById<T>(Guid imageId) where T : Image;
+    Task<List<T>> GetImagesByOwnerId<T>(Guid ownerId) where T : Image;
 }

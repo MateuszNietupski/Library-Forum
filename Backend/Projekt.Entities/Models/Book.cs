@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Projekt.Entities.Models;
 
@@ -12,4 +13,5 @@ public class Book : BaseEntity
     public int? AvailableBookQuantity { get; set; }
     public ICollection<BookInstance> BookInstances { get; set; } = new List<BookInstance>();
     public ICollection<Review> Reviews { get; set; } = new List<Review>();
+    public ICollection<BookImage>? Images { get; set; } = new List<BookImage>();
 }

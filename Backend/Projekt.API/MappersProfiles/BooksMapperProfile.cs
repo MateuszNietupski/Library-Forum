@@ -8,7 +8,8 @@ public class BooksMapperProfile : Profile
 {
     public BooksMapperProfile()
     {
-        CreateMap<BookDto, Book>();
+        CreateMap<BookDto, Book>()
+            .ForMember(dest => dest.Images, opt => opt.Ignore());
         CreateMap<AddBookInstanceDto, BookInstance>();
     }
 }

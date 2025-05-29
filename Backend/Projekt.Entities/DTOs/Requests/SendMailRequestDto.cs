@@ -1,4 +1,4 @@
-namespace Projekt.Models.DTOs.Requests;
+namespace Projekt.Entities.Models.DTOs.Requests;
 
 public class SendMailRequestDto
 {
