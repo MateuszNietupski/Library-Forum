@@ -1,10 +1,13 @@
-import {Box, CardMedia, Container, Modal, Paper, Typography} from "@mui/material";
+import {Box, Button, CardMedia, Container, Modal, Paper, Typography} from "@mui/material";
 import {baseUrl, ENDPOINTS, PATHS} from "../utils/consts";
 import {BrokenImage} from "@mui/icons-material";
 import {useLocation, useParams} from "react-router-dom";
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import BreadCrumbsComponent from "../components/BreadCrumbComponent";
+import CommentEditor from "../components/CommentEditor";
+import CommentList from "../components/CommentList";
+import {useItemCart} from "../context/ItemCartProvider";
 
 const BookDetailsPage = () => {
     const { id } = useParams();
@@ -14,21 +17,30 @@ const BookDetailsPage = () => {
     const [loading, setLoading] = useState(!bookFromState);
     const [error, setError] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [isAddCommentVisible,setIsAddCommentVisible] = useState(false);
+    const {addItemToCart,cartItems} = useItemCart();
+    const inCart    = cartItems.find(i => i.id === book.id)?.quantity || 0;
+    const available = book.quantity;
+    const remaining = available - inCart;
+    const toggleAddCommentVisible = () => {
+        setIsAddCommentVisible(!isAddCommentVisible);   
+    }
+    const fetchData = useCallback(() => {
+        setLoading(true);
+        axios.get(ENDPOINTS.getBook(id))
+            .then(response => {
+                setBook(response.data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.log('Blad pobierania danych', error)
+                setLoading(false);
+            })
+    },[id]) 
 
     useEffect(() => {
-        if(!book && id){
-            setLoading(true);
-            axios.get(ENDPOINTS.getBook)
-                .then(response => {
-                    setBook(response.data);
-                    setLoading(false);
-                })
-                .catch(error => {
-                    console.log('Blad pobierania danych', error)
-                    setLoading(false);
-                })
-        }
-    }, [id,book]);
+        if(id) fetchData();
+    }, [id,fetchData]);
     if (loading) {
         return <Container>Ładowanie...</Container>;
     }
@@ -73,9 +85,18 @@ const BookDetailsPage = () => {
                         <Typography variant="h6" color="text.secondary" gutterBottom>
                             Gatunek: {book.category}
                         </Typography>
+                        <Typography sx={{ m: 2 }}>
+                            Dostępne {available} • W koszyku {inCart}
+                        </Typography>
                         <Typography variant="body1" paragraph>
                             {book.description}
                         </Typography>
+                        <Button
+                            variant="contained"
+                            onClick={() => addItemToCart(book)}
+                            sx={{m:1}}
+                            disabled={!remaining}
+                        >{remaining ? 'Dodaj do koszyka' : 'Brak dostępnych'}</Button>
                     </Box>
                 </Box>
             </Paper>
@@ -107,6 +128,21 @@ const BookDetailsPage = () => {
                     />
                 </Box>
             </Modal>
+            <Box sx={{pr:8,pl:8}}>
+                {isAddCommentVisible ?
+                    (<>
+                            <CommentEditor onCommentSubmit={() => {
+                                toggleAddCommentVisible();
+                                fetchData();
+                            }} endpoint={ENDPOINTS.addReview(book.id)}/>
+                            <Button onClick={toggleAddCommentVisible} variant="outlined" fullWidth>Anuluj</Button>
+                    </>) :
+                    <Button onClick={toggleAddCommentVisible} variant="contained" fullWidth>
+                        Dodaj recenzje
+                    </Button>
+                }
+            </Box>
+            <CommentList comments={book.reviews}/>
         </Container>
     );
 }

@@ -23,7 +23,7 @@ public class BooksController(IBookService bookService) : BaseController
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetBookById(Guid id)
+    public async Task<IActionResult> GetBookById([FromRoute]Guid id)
     {
         var book = await bookService.GetBookByIdAsync(id);
         if (book == null)

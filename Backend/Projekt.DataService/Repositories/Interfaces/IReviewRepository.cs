@@ -4,5 +4,5 @@ namespace Projekt.DataService.Repositories.Interfaces;
 
 public interface IReviewRepository : IGenericRepository<Review>
 {
-    Task<List<Review>> GetReviewsByUserId(Guid userId);
+    Task<List<Review>> GetReviewsByUserId(string userId);
 }

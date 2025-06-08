@@ -1,8 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Projekt.DataService.Data;
-using Projekt.Entities.Models;
 using Projekt.Entities.Models.DTOs.Requests;
 using Projekt.Services.Interfaces;
 
@@ -12,7 +8,7 @@ namespace Projekt.API.Controllers;
 [ApiController]
 public class LoansController(IBookService bookService) : ControllerBase
 {
-    [HttpPost("loans")]
+    [HttpPost("")]
    // [Authorize(Roles = "User")]
     public async Task<IActionResult> AddLoan([FromBody] LoanDTO loanDto)
     {
@@ -25,7 +21,7 @@ public class LoansController(IBookService bookService) : ControllerBase
             newLoan);
     }
 
-    [HttpGet("loans/{id:guid}")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetLoanById(Guid id)
     {
         var loan = await bookService.GetLoanByIdAsync(id);
@@ -33,7 +29,7 @@ public class LoansController(IBookService bookService) : ControllerBase
             return NotFound();
         return Ok(loan);
     }
-    [HttpGet("loans")]
+    [HttpGet("")]
     
     public async Task<IActionResult> GetLoan()
     {
@@ -42,7 +38,7 @@ public class LoansController(IBookService bookService) : ControllerBase
             return NotFound();
         return Ok(response);
     }
-    [HttpGet("loans/users/{id}")]
+    [HttpGet("users/{id}")]
   //  [Authorize(Roles = "User")]
     public async Task<IActionResult> GetLoan(string id)
     {
@@ -52,7 +48,7 @@ public class LoansController(IBookService bookService) : ControllerBase
         return Ok(response);
     }
 
-    [HttpPut("loans/{id:guid}")]
+    [HttpPut("{id:guid}")]
   //  [Authorize(Roles = "User")]
     public async Task<IActionResult> UpdateLoan(Guid id)
     {

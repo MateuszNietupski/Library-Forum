@@ -59,6 +59,10 @@ namespace Projekt.DataService.Data
                 .WithMany(i => i.Images)
                 .HasForeignKey(b => b.BookId)
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Review>()
+                .HasOne(u => u.AppUser)
+                .WithMany(c => c.Reviews)
+                .HasForeignKey(k => k.UserId);
         }
     }
 }

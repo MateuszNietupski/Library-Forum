@@ -16,22 +16,21 @@ const Header = () => {
     return (
         <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
             <Container>
-                
                 <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">
                         <SunIcon/>
                         <SwitchTheme/>
                         <MoonIcon/>
                         <Navbar.Brand as={Link} to={PATHS.home}>Home</Navbar.Brand>
+                        <Navbar.Brand as={Link} to={PATHS.userPanel}>UserPanel</Navbar.Brand>
                         <Navbar.Brand as={Link} to={PATHS.adminPanel}>AdminPanel</Navbar.Brand>
                         <Navbar.Brand as={Link} to={PATHS.books}>Books</Navbar.Brand>
                     </Navbar.Collapse>
                 <ItemCartHome/>
                 <Nav className="me-auto">
-                    {isLoggedIn && (
-                        <>
-                            <Nav.Link onClick={logout}>Logout</Nav.Link>
-                        </>
+                    {isLoggedIn ? (
+                        <Nav.Link onClick={logout}>Logout</Nav.Link>
+                    ) : (<Nav.Link as={Link} to={PATHS.login} >Zaloguj się</Nav.Link>
                     )}
                 </Nav>
             </Container>

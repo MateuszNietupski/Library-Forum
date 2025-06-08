@@ -13,7 +13,6 @@ public class BookRepository(AppDbContext context) : GenericRepository<Book>(cont
             .Include(review => review.Reviews.OrderByDescending(r => r.DateAdded))
             .ThenInclude(u => u.AppUser)
             .Include(book => book.Images.Where(i => i is BookImage))
-            .Include(bi => bi.BookInstances)
             .ToListAsync();
     }
     public override async Task<Book?> GetById(Guid id)
@@ -22,10 +21,8 @@ public class BookRepository(AppDbContext context) : GenericRepository<Book>(cont
             .Include(review => review.Reviews.OrderByDescending(r => r.DateAdded))
             .ThenInclude(u => u.AppUser)
             .Include(book => book.Images.Where(i => i is BookImage))
-            .Include(bi => bi.BookInstances)
             .FirstOrDefaultAsync(b => b.Id == id);
     }
-
     public async Task<List<BookInstance>?> GetAllBookInstances()
     {
         return await context.BookInstances
@@ -53,5 +50,18 @@ public class BookRepository(AppDbContext context) : GenericRepository<Book>(cont
     public Task<BookInstance?> GetBookInstanceByIdAsync(Guid id)
     {
         return context.BookInstances.FirstOrDefaultAsync(b => b.Id == id);
+    }
+    public async Task<List<BookInstance>> GetFreeInstancesAsync(Guid id, int quantity)
+    {
+        return await context.BookInstances
+            .Where(b => b.BookId == id && b.IsAvailable)
+            .Take(quantity)
+            .ToListAsync();
+    }
+    public async Task<int> GetFreeInstancesCountAsync(Guid id)
+    {
+        return await context.BookInstances
+            .Where(b => b.BookId == id && b.IsAvailable)
+            .CountAsync();
     }
 }

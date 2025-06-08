@@ -7,7 +7,7 @@ namespace Projekt.DataService.Repositories;
 
 public class RewiewRepository(AppDbContext context) : GenericRepository<Review>(context), IReviewRepository
 {
-    public async Task<List<Review>> GetReviewsByUserId(Guid userId)
+    public async Task<List<Review>> GetReviewsByUserId(string userId)
     {
         return await context.Reviews
             .Where(r => r.UserId == userId)

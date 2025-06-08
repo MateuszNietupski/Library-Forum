@@ -1,14 +1,12 @@
-import {Card, CardContent, CardMedia, Typography,Button} from "@mui/material";
+import {Card, CardContent, CardMedia, Typography} from "@mui/material";
 import {baseUrl} from "../utils/consts";
 import {BrokenImage} from "@mui/icons-material";
-import {useItemCart} from "../context/ItemCartProvider";
 import { Link } from 'react-router-dom';
 
 export const BookCard = ({book}) => {
     const imageUrl = book.images?.length > 0
         ? baseUrl + book.images[0].filePath
         : null;
-    const { addItemToCart } = useItemCart();
     
     return (
         <Link
@@ -41,7 +39,6 @@ export const BookCard = ({book}) => {
                     <Typography variant="h6" sx={{fontWeight:'bold'}}>Tytuł: {book.name}</Typography>
                     <Typography variant="body" color="text.secondary" sx={{ display: 'block' }}>Autor: {book.author}</Typography>
                     <Typography variant="body" color="text.secondary" sx={{ display: 'block' }}>Gatunek: {book.category}</Typography>
-                    <Button variant="contained" onClick={() => addItemToCart(book)} sx={{m:1}}>Dodaj do koszyka</Button>
                 </CardContent>
             </Card>
         </Link>

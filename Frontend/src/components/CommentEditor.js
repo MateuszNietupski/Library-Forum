@@ -4,20 +4,20 @@ import axiosAuth from "../utils/authInstance";
 import {ENDPOINTS} from "../utils/consts";
 import {useParams} from "react-router-dom";
 import {AuthContext} from "../context/AuthProvider";
+import axiosDefault from "../utils/defaultInstance";
 
-const CommentEditor = ({onCommentSubmit}) => {
+const CommentEditor = ({onCommentSubmit,endpoint}) => {
     const [newComment, setNewComment] = useState('');
     const {user} = useContext(AuthContext);
-    const {postId} = useParams();
+    const {id} = useParams();
     const request = {
         Content: newComment,
         UserId: user.id,
-        PostId: postId
     }
     
     const handleAddComment = () => {
         if (newComment.trim() !== '') {
-            axiosAuth.post(ENDPOINTS.addComment, request)
+            axiosDefault.post(endpoint, request)
                 .then(() => {
                     onCommentSubmit();
                 })

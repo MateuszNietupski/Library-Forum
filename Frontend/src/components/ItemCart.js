@@ -1,34 +1,11 @@
 import {useItemCart} from "../context/ItemCartProvider";
 import Button from "@mui/material/Button";
-import axios from "axios";
-import {ENDPOINTS} from "../utils/consts";
-import {jwtDecode} from "jwt-decode";
+import {PATHS} from "../utils/consts";
+import {Link} from "react-router-dom";
 
 const ItemCart = () => {
     const { cartItems, removeItemFromCart, clearCart } = useItemCart();
-    const token = localStorage.getItem('access_token');
-    let userId;
-    if(token)
-    {
-        const decodeToken = jwtDecode(token);
-        userId = decodeToken.Id
-    }
-    const rentBooks = () => {
-        
-        const loanDto = {
-            UserId: userId, 
-            BooksId: cartItems.map(item => item.id.toString())
-        };
-        
-        axios.post(ENDPOINTS.addLoan,loanDto)
-            .then(() => {
-                clearCart();
-            })
-            .catch(error => {
-                console.log('Blad: ', error);
-            })
-    }
-
+    
     return (
         <div>
             <ul>
@@ -41,7 +18,7 @@ const ItemCart = () => {
                 ))}
             </ul>
             <Button onClick={clearCart}>Wyczyść</Button>
-            <Button onClick={rentBooks}>Zatwierdź</Button>
+            <Button as={Link} to={PATHS.loanConfirm}>Wypożycz</Button>
         </div>
     );
 };

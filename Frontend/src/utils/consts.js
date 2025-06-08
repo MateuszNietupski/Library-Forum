@@ -11,13 +11,16 @@ export const ENDPOINTS = {
     getPost: `${baseUrl}/api/getPost`,
     getForumPosts: `${baseUrl}/api/getPosts`,
     getBooks: `${baseUrl}/api/Books`,
-    getBook: `${baseUrl}/api/Book:id`,
+    getBook: (id) => `${baseUrl}/api/Books/${id}`,
+    addReview: (id) => `${baseUrl}/api/Review/${id}`,
+    deleteReview: (id) => `${baseUrl}/api/Review/${id}`,
+    updateReview: (id) => `${baseUrl}/api/Review/${id}`,
     confirmationMail: `${baseUrl}/api/confirmationMail`,
     addComment: `${baseUrl}/api/addComment`,
     addPost: `${baseUrl}/api/addPost`,
-    addLoan: `${baseUrl}/api/loanAdd`,
+    addLoan: `${baseUrl}/api/Loans`,
     loanConfirm: `${baseUrl}/api/loanConfirm`,
-    getLoans: `${baseUrl}/api/loanGet`,
+    getUserLoans: (id) => `${baseUrl}/api/Loans/users/${id}`,
 }
 
 export const PATHS = {
@@ -32,6 +35,9 @@ export const PATHS = {
     adminPanel: '/adminPanel',
     books: '/books',
     book: `/books/:id`,
+    loanConfirm: '/loanConfirm',
+    loanConfirmSuccess: '/loanConfirm/success',
+    userPanel: '/userPanel',
 }
 
 export const LOCAL_STORAGE = {

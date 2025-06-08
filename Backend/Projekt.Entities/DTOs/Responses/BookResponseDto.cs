@@ -8,5 +8,6 @@ public class BookResponseDto
     public string Author { get; set; }
     public string? Description { get; set; }
     public List<Image>? Images { get; set; }
-    public List<BookInstance>? BookInstances { get; set; }
+    public int quantity { get; set; }
+    public List<ReviewResponseDto>? Reviews { get; set; }
 }

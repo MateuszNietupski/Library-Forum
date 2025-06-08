@@ -14,6 +14,9 @@ import AdminPage from "./pages/AdminPage";
 import Unauthorized from "./pages/Unauthorized";
 import NotFound from "./pages/NotFound";
 import BookDetailsPage from "./pages/BookDetailsPage";
+import LoansPage from "./pages/LoansPage";
+import LoanSummary from "./pages/LoanSummary";
+import UserPage from "./pages/UserPage";
 
 function App() {
   return (
@@ -32,6 +35,9 @@ function App() {
             <Route path={PATHS.forum} element={<Forum />} />
             <Route path={PATHS.subcategory} element={<PostList/>}/>
             <Route path={PATHS.post} element={<Post/>}/>
+            <Route path={PATHS.loanConfirm} element={<LoansPage/>}/>
+            <Route path={PATHS.loanConfirmSuccess} element={<LoanSummary/>}/>
+            <Route path={PATHS.userPanel} element={<UserPage/>}/>
           </Route>
           
           <Route element={<ProtectedRoute allowedRoles={[ROLES.admin]}/>}>

@@ -7,5 +7,6 @@ namespace Projekt.Entities.Models
         public ICollection<Loan>? Loans { get; set; } = new List<Loan>();
         public ICollection<Post>? Posts { get; set; } = new List<Post>();
         public ICollection<Comment>? Comments { get; set; } = new List<Comment>();
+        public ICollection<Review>? Reviews { get; set; } = new List<Review>();
     }
 }

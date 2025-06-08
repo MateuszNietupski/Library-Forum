@@ -7,7 +7,7 @@ namespace Projekt.Controllers
 {
     [Route("api/auth")]
     [ApiController] 
-        public class AuthenticationController(IAuthenticationService _authenticationService) : BaseContorller
+        public class AuthenticationController(IAuthenticationService _authenticationService) : BaseController
         {
             [HttpPost("register")]
             public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
